@@ -13,6 +13,6 @@ $factory->define(Article::class, function (Faker $faker) {
         'overall_rating' => 0,
         'is_rated' => false,
         'is_locked' => false,
-        'is_free' => false
+        'is_free' => true
     ];
 });

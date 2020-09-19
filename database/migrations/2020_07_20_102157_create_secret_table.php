@@ -19,6 +19,7 @@ class CreateSecretTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->string('title');
             $table->text('body');
+            $table->double('price');
             $table->double('overall_rating')->default(0.0);
             $table->boolean('is_rated')->default(false);
             $table->boolean('is_free')->default(false);
