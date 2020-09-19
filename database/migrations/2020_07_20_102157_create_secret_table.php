@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSecret extends Migration
+class CreateSecretTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class CreateSecret extends Migration
      */
     public function up()
     {
-        Schema::create('secret', function (Blueprint $table) {
+        Schema::create('secrets', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('description')->nullable();
             $table->integer('user_id')->unsigned();
             $table->string('title');
             $table->text('body');

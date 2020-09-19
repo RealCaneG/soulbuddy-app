@@ -22,7 +22,7 @@ class CreateCounsellingRequestsTable extends Migration
             $table->string('subject');
             $table->text('description');
             $table->boolean('is_closed')->default(false);
-            $table->timestamp('time_solved');
+            $table->timestamp('time_solved')->nullable();
             $table->timestamps();
         });
     }

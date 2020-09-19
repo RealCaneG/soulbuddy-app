@@ -22,7 +22,7 @@ $factory->define(\App\CounsellingRequest::class, function (Faker $faker) {
         'subject' => $faker->text(50),
         'category_id' => $faker->numberBetween(1, 7),
         'expiry_date' => $faker->dateTimeBetween('now', '+30 days')->format('Y-m-d'),
-        'description' => $faker->paragraph(5), // password
-        'maker_id' => $faker->numberBetween(1, 104),
+        'description' => $faker->paragraph(5),
+        'maker_id' => $faker->numberBetween(1, 104)
     ];
 });

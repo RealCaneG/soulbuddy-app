@@ -16,7 +16,7 @@ class CreateUserBalanceTable extends Migration
         Schema::create('user_balances', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id');
-            $table->unsignedDouble('balance');
+            $table->unsignedDouble('balance')->default(0.0);
             $table->boolean('is_locked');
             $table->timestamps();
         });

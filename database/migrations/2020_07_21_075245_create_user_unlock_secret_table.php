@@ -15,9 +15,9 @@ class CreateUserUnlockSecretTable extends Migration
     {
         Schema::create('user_unlock_secret', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('secret_id');
+            $table->timestamps();
         });
     }
 

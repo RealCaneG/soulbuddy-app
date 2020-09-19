@@ -24,6 +24,7 @@ use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Exception\PayPalConnectionException;
 use PayPal\Exception\PPConnectionException;
 use PayPal\Rest\ApiContext;
+use PHPUnit\Exception;
 
 class PaymentController extends Controller
 {
@@ -51,6 +52,7 @@ class PaymentController extends Controller
     public function captureTransaction(Request $request)
     {
         $userId = Auth::user()->id;
+
         $transactionType = TransactionType::firstOrCreate(['type' => $request->transaction_type]);
         $transactionStatus = TransactionStatus::firstOrCreate(['status' => $request->status]);
 
@@ -75,9 +77,14 @@ class PaymentController extends Controller
 
         if (strcasecmp($request->status, 'COMPLETED') == 0) {
             if ($this->topUpTokens($request->amount, Auth::user()->id)) {
-                return response()->json(['error' => false, 'message' => 'Transaction successfully captured! Top Up token successfully!', 'data' => $userTransaction]);
+                return response()->json(
+                    ['error' => false,
+                        'message' => 'Transaction successfully captured! Top Up token successfully!',
+                        'data' => $userTransaction]);
             } else {
-                return response()->json(['error' => true, 'message' => 'Unable to top up token, please contact our customer service.']);
+                return response()->json(
+                    ['error' => true,
+                        'message' => 'Unable to top up token, please contact our customer service.']);
             }
 
         }
@@ -89,10 +96,18 @@ class PaymentController extends Controller
         $pricing = Pricing::wherePrice($amount)->first();
         $userBalance = UserBalance::whereUserId($userId)->first();
 
-        if ($pricing) {
-            $balance = $userBalance->balance;
-            $userBalance->balance = $balance + $pricing->token;
-            $userBalance->save();
+        \DB::beginTransaction();
+
+        if ($pricing && $userBalance) {
+            try {
+                $balance = $userBalance->balance;
+                $userBalance->balance = $balance + $pricing->token;
+                $userBalance->save();
+            } catch (\Exception $exception) {
+                \DB::rollBack();
+                throw $exception;
+            }
+            \DB::commit();
             return true;
         }
         return false;
