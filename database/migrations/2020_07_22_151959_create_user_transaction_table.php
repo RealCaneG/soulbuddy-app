@@ -42,6 +42,6 @@ class CreateUserTransactionTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_transaction');
+        Schema::dropIfExists('user_transactions');
     }
 }

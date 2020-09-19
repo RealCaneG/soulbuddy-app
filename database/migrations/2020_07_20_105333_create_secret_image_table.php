@@ -29,6 +29,6 @@ class CreateSecretImageTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('secret_image');
+        Schema::dropIfExists('secret_images');
     }
 }

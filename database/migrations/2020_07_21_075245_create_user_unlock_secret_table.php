@@ -28,6 +28,6 @@ class CreateUserUnlockSecretTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_unlock_secret');
+        Schema::dropIfExists('user_unlock_secrets');
     }
 }

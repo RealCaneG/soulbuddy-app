@@ -31,6 +31,6 @@ class CreateRatingTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rating');
+        Schema::dropIfExists('ratings');
     }
 }

@@ -27,6 +27,6 @@ class CreateTransactionStatusTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transaction_status');
+        Schema::dropIfExists('transaction_statuses');
     }
 }

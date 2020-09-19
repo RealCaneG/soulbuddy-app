@@ -13,7 +13,7 @@ class CreateNotificationTypeTable extends Migration
      */
     public function up()
     {
-        Schema::create('notification_type', function (Blueprint $table) {
+        Schema::create('notification_types', function (Blueprint $table) {
             $table->id();
             $table->string('type');
             $table->boolean('is_valid')->default(true);
@@ -28,6 +28,6 @@ class CreateNotificationTypeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('notification_type');
+        Schema::dropIfExists('notification_types');
     }
 }

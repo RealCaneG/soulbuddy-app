@@ -29,6 +29,6 @@ class CreateUserBalanceTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_balance');
+        Schema::dropIfExists('user_balances');
     }
 }

@@ -27,6 +27,6 @@ class CreateTransactionTypeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transaction_type');
+        Schema::dropIfExists('transaction_types');
     }
 }
