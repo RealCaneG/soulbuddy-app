@@ -1,0 +1,15 @@
+<application>
+  <component name="libraryTable">
+    <library name="vue-chat-scroll" type="javaScript">
+      <properties>
+        <sourceFilesUrls>
+          <item url="file://$APPLICATION_CONFIG_DIR$/javascript/extLibs/http_cdn.jsdelivr.net_npm_vue-chat-scroll_dist_vue-chat-scroll.js" />
+        </sourceFilesUrls>
+      </properties>
+      <CLASSES>
+        <root url="file://$APPLICATION_CONFIG_DIR$/javascript/extLibs/http_cdn.jsdelivr.net_npm_vue-chat-scroll_dist_vue-chat-scroll.js" />
+      </CLASSES>
+      <SOURCES />
+    </library>
+  </component>
+</application>
