@@ -6,7 +6,7 @@ use Faker\Generator as Faker;
 
 $factory->define(\App\Secret::class, function (Faker $faker) {
     return [
-        'user_id' => $faker->numberBetween(1, 104),
+        'user_id' => $faker->numberBetween(1, 100),
         'title' => $faker->unique()->sentence,
         'body' => $faker->paragraph(5),
         'description' => $faker->paragraph(2),

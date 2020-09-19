@@ -14,11 +14,14 @@ class DatabaseSeeder extends Seeder
         //$this->call(ArticleSeeder::class);
         //$this->call(CategorySeeder::class);
         //$this->call(CounsellingRequestSeeder::class);
-        $this->call([SecretSeeder::class,
+        $this->call([
+            UserSeeder::class,
+            SecretSeeder::class,
             ArticleSeeder::class,
             CategorySeeder::class,
             CounsellingRequestSeeder::class,
             TransactionTypeSeeder::class,
+            TransactionStatusSeeder::class
             ]);
     }
 }

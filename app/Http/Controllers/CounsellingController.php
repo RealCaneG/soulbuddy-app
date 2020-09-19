@@ -7,6 +7,7 @@ use App\CounsellingRequest;
 use App\UserBalance;
 use Illuminate\Http\Request;
 use Auth;
+use Mockery\Exception;
 
 class CounsellingController extends Controller
 {
@@ -28,15 +29,21 @@ class CounsellingController extends Controller
         $data = \GuzzleHttp\json_decode($request->data, true);
         error_log($data['category']);
         error_log($user);
-        $userBalance = UserBalance::whereUserId($user->id)->first();
         if ($this->deductVouchers($user->id)) {
-            $counsellingRequest = CounsellingRequest::create([
-                'category_id' => $data['category'],
-                'expiry_date' => $data['date'],
-                'subject' => $data['subject'],
-                'description' => $data['description'],
-                'maker_id' => $user->id
-            ]);
+            \DB::beginTransaction();
+            try {
+                $counsellingRequest = CounsellingRequest::create([
+                    'category_id' => $data['category'],
+                    'expiry_date' => $data['date'],
+                    'subject' => $data['subject'],
+                    'description' => $data['description'],
+                    'maker_id' => $user->id
+                ]);
+            } catch (\Exception $exception) {
+                \DB::rollBack();
+                throw $exception;
+            }
+            \DB::commit();;
             return response()->json(['error' => 'false', 'data' => $counsellingRequest]);
         } else {
             return response()->json(['error' => 'true', 'message' => 'User does not have enough voucher!']);
@@ -53,9 +60,16 @@ class CounsellingController extends Controller
     {
         $userBalance = UserBalance::whereUserId($userId)->first();
         if ($userBalance->balance - 5 > 0) {
-            $balance = $userBalance->balance;
-            $userBalance->balance = $balance + 5;
-            $userBalance->save();
+            \DB::beginTransaction();
+            try {
+                $balance = $userBalance->balance;
+                $userBalance->balance = $balance + 5;
+                $userBalance->save();
+            } catch (\PHPUnit\Exception $exception) {
+                \DB::rollBack();
+                throw $exception;
+            }
+            \DB::commit();
             return true;
         }
         return false;

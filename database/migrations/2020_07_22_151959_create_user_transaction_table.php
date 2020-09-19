@@ -15,22 +15,22 @@ class CreateUserTransactionTable extends Migration
     {
         Schema::create('user_transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('payment_id');
+            $table->string('payment_id')->nullable();
             $table->double('amount');
-            $table->string('ccy');
+            $table->string('ccy')->nullable();
             $table->string('payment_method');
             $table->integer('transaction_type');
             $table->integer('status');
-            $table->string('intent');
-            $table->string('country_code');
+            $table->string('intent')->nullable();
+            $table->string('country_code')->nullable();
             $table->unsignedInteger('to_user_id');
-            $table->string('merchant_id');
-            $table->string('payee_email');
+            $table->string('merchant_id')->nullable();
+            $table->string('payee_email')->nullable();
             $table->string('payer_id');
-            $table->string('payer_email');
-            $table->string('given_name');
-            $table->string('surname');
-            $table->string('reference_id');
+            $table->string('payer_email')->nullable();
+            $table->string('given_name')->nullable();
+            $table->string('surname')->nullable();
+            $table->string('reference_id')->nullable();
             $table->timestamps();
         });
     }
