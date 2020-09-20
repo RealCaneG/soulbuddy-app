@@ -74,7 +74,7 @@ class RegisterController extends Controller
 
         UserBalance::create([
             'user_id' => $user->id,
-            'balance' => 0,
+            'balance' => 10000,
             'is_locked' => false,
         ]);
 

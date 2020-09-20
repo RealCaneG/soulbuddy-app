@@ -34,6 +34,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\CounsellingRequest whereMakerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\CounsellingRequest whereSolverId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\CounsellingRequest whereTimeSolved($value)
+ * @property string $subject
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\CounsellingRequest whereSubject($value)
  */
 class CounsellingRequest extends Model
 {

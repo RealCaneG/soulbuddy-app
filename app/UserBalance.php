@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\UserBalance whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\UserBalance whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\User $owner
  */
 class UserBalance extends Model
 {

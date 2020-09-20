@@ -33,6 +33,11 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Secret whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Secret whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\User $author
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Rating[] $ratings
+ * @property-read int|null $ratings_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\UserUnlockSecret[] $userUnlockSecret
+ * @property-read int|null $user_unlock_secret_count
  */
 class Secret extends Model
 {

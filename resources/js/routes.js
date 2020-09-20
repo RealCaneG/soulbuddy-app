@@ -6,8 +6,10 @@ import Article from "./pages/Article";
 import CreateSecret from "./components/CreateSecret";
 import Secret from "./pages/Secret";
 import Pricing from "./pages/Pricing";
+import Logout from "./pages/Logout";
 
 export const routes = [
+    { path: '/logout', component: Logout, name: 'Logout'},
     { path: '/home', component: Article, name: 'Articles'},
     { path: '/home/articles', component: Article, name: 'Article'},
     { path: '/home/articles/new', component: CreateArticle, name: 'CreateArticle'},

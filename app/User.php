@@ -55,6 +55,7 @@ use Laravel\Passport\HasApiTokens;
  * @property-read int|null $messages_received_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Message[] $messagesSent
  * @property-read int|null $messages_sent_count
+ * @property-read \App\UserBalance|null $userBalance
  */
 class User extends Authenticatable
 {

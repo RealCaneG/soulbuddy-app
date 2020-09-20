@@ -32,8 +32,8 @@
                             <b-icon icon="chat"></b-icon>
                         </div>
                     </li>
-                    <li class="nav-item" v-if="this.user.name !== null">
-                        <avatar :size="45" v-bind:username="this.user.name"></avatar>
+                    <li class="nav-item" v-if="this.user.name !== null" @click="logout()">
+                            <avatar :size="45" v-bind:username="this.user.name"></avatar>
                     </li>
                 </ul>
             </div>
@@ -133,7 +133,22 @@
 
                 }
                 console.log(this.isDialogWindowOpen)
+            },
+            logout() {
+                if (confirm("Are you sure you want to log out?")) {
+                    axios.post('logout').then(response => {
+                        localStorage.removeItem('auth_token');
+                        delete axios.defaults.headers.common['Authorization'];
+                        this.$router.push('/logout');
+                    })
+                        .catch(error => {
+                            localStorage.removeItem('auth_token');
+                            delete axios.defaults.headers.common['Authorization'];
+                            this.$router.push('/logout');
+                        });
+                }
             }
+
         }
     }
 </script>

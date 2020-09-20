@@ -13,6 +13,7 @@ use App\UserUnlockSecret;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class SecretController extends Controller
 {
@@ -92,59 +93,62 @@ class SecretController extends Controller
     private function unlockSecretService(int $userId, int $secretId)
     {
         $secret = Secret::whereId($secretId)->first();
-        error_log('Secret '. $secret);
         $secretPrice = $secret->price;
         $secretOwnedBy = $secret->author()->first();
-        error_log('Seller = '. $secretOwnedBy);
-        error_log('Seller id= '. $secretOwnedBy->id);
         try {
-                $buyerBalance = UserBalance::where('user_id', '=', $userId)->first();
-                $sellerBalance = UserBalance::where('user_id', '=', $secretOwnedBy->id)->first();
-            } catch (\Exception $exception) {
-                throw $exception;
-            }
+            $buyerBalance = UserBalance::where('user_id', '=', $userId)->first();
+            $sellerBalance = UserBalance::where('user_id', '=', $secretOwnedBy->id)->first();
+            error_log('buyer balance ' . $buyerBalance);
+            error_log('price ' . $secretPrice);
+        } catch (\Exception $exception) {
+            throw $exception;
+        }
         if ($secret !== null) {
-            if ($secretPrice <= $buyerBalance->balance) {
-                try {
-                    \DB::beginTransaction();
-                    $newBalance = $buyerBalance->balance - $secretPrice;
-                    $buyerBalance->balance = $newBalance;
-                    $newBalance = $sellerBalance->balance + $secretPrice;
-                    $sellerBalance->balance = $newBalance;
-                    $buyerBalance->save();
-                    $sellerBalance->save();
-                    $typeSellingSecret = TransactionType::where('type', 'Selling Secret')->first();
-                    $typeBuyingSecret = TransactionType::where('type', 'Purchase Secret')->first();
-                    $statusCompleted = TransactionStatus::where('status', 'completed')->firstOrCreate([
-                        'status' => 'completed'
-                    ]);
-                    $referenceId = $secret->userId . '|' . $userId . '|' . $secret->id;
-                    UserTransaction::create([
-                        'payer_id' => $userId,
-                        'to_user_id' => $secret->user_id,
-                        'amount' => -$secretPrice,
-                        'transaction_type' => $typeBuyingSecret->id,
-                        'status' => $statusCompleted->id,
-                        'reference_id' => $referenceId,
-                        'payment_method'=> 'VOUCHERS'
-                    ]);
-                    UserTransaction::create([
-                        'payer_id' => $userId,
-                        'to_user_id' => $secret->user_id,
-                        'amount' => $secretPrice,
-                        'transaction_type' => $typeSellingSecret->id,
-                        'status' => $statusCompleted->id,
-                        'reference_id' => $referenceId,
-                        'payment_method'=> 'VOUCHERS'
-                    ]);
-                    \DB::commit();
-                    return UserUnlockSecret::firstOrCreate(
-                        ['user_id' => $userId, 'secret_id' => $secretId,]);
-                } catch (\Exception $e) {
-                    \DB::rollBack();
-                    throw new \Exception('Transaction is not completed, rolling back..' . $e);
-                }
+            if (!$secretPrice <= $buyerBalance->balance) {
+                throw new BadRequestException('Not enough balance for purchase');
             }
+            try {
+                \DB::beginTransaction();
+                $newBalance = $buyerBalance->balance - $secretPrice;
+                $buyerBalance->balance = $newBalance;
+                $newBalance = $sellerBalance->balance + $secretPrice;
+                $sellerBalance->balance = $newBalance;
+                $buyerBalance->save();
+                $sellerBalance->save();
+                $typeSellingSecret = TransactionType::where('type', 'Selling Secret')->first();
+                $typeBuyingSecret = TransactionType::where('type', 'Purchase Secret')->first();
+                $statusCompleted = TransactionStatus::where('status', 'completed')->firstOrCreate([
+                    'status' => 'completed'
+                ]);
+                $referenceId = $secret->userId . '|' . $userId . '|' . $secret->id;
+                UserTransaction::create([
+                    'payer_id' => $userId,
+                    'to_user_id' => $secret->user_id,
+                    'amount' => -$secretPrice,
+                    'transaction_type' => $typeBuyingSecret->id,
+                    'status' => $statusCompleted->id,
+                    'reference_id' => $referenceId,
+                    'payment_method' => 'VOUCHERS'
+                ]);
+                UserTransaction::create([
+                    'payer_id' => $userId,
+                    'to_user_id' => $secret->user_id,
+                    'amount' => $secretPrice,
+                    'transaction_type' => $typeSellingSecret->id,
+                    'status' => $statusCompleted->id,
+                    'reference_id' => $referenceId,
+                    'payment_method' => 'VOUCHERS'
+                ]);
+                $secret = UserUnlockSecret::firstOrCreate(
+                    ['user_id' => $userId, 'secret_id' => $secretId,]);
+                error_log('secret = ' . $secret);
+                \DB::commit();
+                return $secret;
+            } catch (\Exception $e) {
+                \DB::rollBack();
+                throw new \Exception('Transaction is not completed, rolling back..' . $e);
+            }
+
         }
         return null;
     }
