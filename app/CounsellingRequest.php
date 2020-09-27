@@ -39,7 +39,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CounsellingRequest extends Model
 {
-    protected $fillable = ['subject', 'category_id', 'expiry_date', 'description', 'maker_id'];
+    protected $fillable = ['subject', 'category_id', 'expiry_date', 'description', 'maker_id', 'solver_id', 'time_solved', 'is_closed'];
 
     public function category()
     {

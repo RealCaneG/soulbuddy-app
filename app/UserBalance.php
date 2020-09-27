@@ -29,6 +29,6 @@ class UserBalance extends Model
 {
     protected $fillable = ['user_id', 'balance', 'is_locked', 'created_at', 'updated_at'];
     public function owner() {
-        return $this->belongsTo('App\User', 'id', 'user_id');
+        return $this->belongsTo('App\User');
     }
 }

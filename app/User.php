@@ -105,7 +105,7 @@ class User extends Authenticatable
 
     public function userBalance()
     {
-        return $this->hasOne('App\UserBalance', 'user_id');
+        return $this->hasOne('App\UserBalance');//FIXME
     }
 
     public function transactions()
