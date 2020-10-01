@@ -15,8 +15,8 @@ class CreateArticleImagesTable extends Migration
     {
         Schema::create('article_images', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('article_id')->unsigned();
-            $table->string('article_image_path');
+            $table->integer('article_id')->default(-1);
+            $table->string('article_image_path')->nullable();
             $table->string('article_image_caption')->nullable();
             $table->timestamps();
         });

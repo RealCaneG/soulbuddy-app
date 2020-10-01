@@ -15,8 +15,8 @@ class CreateTransactionStatusTable extends Migration
     {
         Schema::create('transaction_statuses', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->string('status');
+            $table->timestamps();
         });
     }
 
@@ -27,6 +27,6 @@ class CreateTransactionStatusTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transaction_status');
+        Schema::dropIfExists('transaction_statuses');
     }
 }

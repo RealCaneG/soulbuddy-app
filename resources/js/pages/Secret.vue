@@ -9,10 +9,9 @@
              </div>-->
 
             <div class="wrapper-center">
-                <b-button v-b-modal.create-secret-modal @click="$bvModal.show('create-secret-modal')">Write an
+                <b-button v-b-modal.create-secret-modal @click="$bvModal.show('create-secret-modal')">Write a
                     Secret
                 </b-button>
-            </div>
             </div>
             <b-modal class="dialog" busy="true" centered id="create-secret-modal">
                 <template v-slot:modal-title>

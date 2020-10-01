@@ -34,10 +34,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\CounsellingRequest whereMakerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\CounsellingRequest whereSolverId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\CounsellingRequest whereTimeSolved($value)
+ * @property string $subject
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\CounsellingRequest whereSubject($value)
  */
 class CounsellingRequest extends Model
 {
-    protected $fillable = ['subject', 'category_id', 'expiry_date', 'description', 'maker_id'];
+    protected $fillable = ['subject', 'category_id', 'expiry_date', 'description', 'maker_id', 'solver_id', 'time_solved', 'is_closed'];
 
     public function category()
     {

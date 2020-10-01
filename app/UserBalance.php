@@ -23,11 +23,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\UserBalance whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\UserBalance whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\User $owner
  */
 class UserBalance extends Model
 {
     protected $fillable = ['user_id', 'balance', 'is_locked', 'created_at', 'updated_at'];
     public function owner() {
-        return $this->belongsTo('App\User', 'id', 'user_id');
+        return $this->belongsTo('App\User');
     }
 }

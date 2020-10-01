@@ -13,11 +13,11 @@ class CreateUserUnlockSecretTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_unlock_secret', function (Blueprint $table) {
+        Schema::create('user_unlock_secrets', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('secret_id');
+            $table->timestamps();
         });
     }
 
@@ -28,6 +28,6 @@ class CreateUserUnlockSecretTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_unlock_secret');
+        Schema::dropIfExists('user_unlock_secrets');
     }
 }

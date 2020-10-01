@@ -9,9 +9,10 @@ $factory->define(Article::class, function (Faker $faker) {
     return [
         'user_id' => $faker->numberBetween(1, 50),
         'title' => $faker->unique()->sentence,
-        'body' => $faker->unique()->text(200),
-        'overall_rating' => 0, // password
+        'body' => $faker->unique()->paragraph(100),
+        'overall_rating' => 0,
         'is_rated' => false,
         'is_locked' => false,
+        'is_free' => true
     ];
 });
