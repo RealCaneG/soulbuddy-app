@@ -2,7 +2,7 @@
     <div class="row list" v-infinite-scroll="loadSecrets" infinite-scroll-throttle-delay="3000">
         <div class="col-md-12 list-item" v-for="(secret, i) in secrets" :key=i>
             <component :is="secretComponent(secret.id)" v-bind="{secret: secret}"
-                       v-on:handleSecret="handleSecret"></component>
+                       v-on:handleSecret="handleSecret(i)"></component>
         </div>
         <el-dialog v-if="currentSecret" :visible.sync="secretDialogVisible" width="70%">
             <div>
@@ -21,41 +21,49 @@
 
 <script>
     import LockedSecret from "./lockedSecret";
+    import {mapActions} from "vuex";
 
     export default {
         components: {LockedSecret},
         name: "all-secrets",
+        props: ['category'],
         data() {
             return {
-                secrets: [],
                 secretDialogVisible: false,
                 isLoading: false,
                 currentSecret: '',
                 numOfItems: 30,
                 page: 1,
+                userUnlockedSecrets: this.$store.state.userUnlockedSecrets,
             };
+        },
+        computed: {
+            secrets() {
+                if (this.category === null) return this.$store.state.secrets;
+                return this.$store.state.secrets.filter(secret => secret.category.id === this.category);
+            }
         },
         beforeMount() {
             this.getSecrets();
         },
         methods: {
+            ...mapActions({
+                update: 'updateUserUnlockedSecrets',
+                get: 'getPaginatedSecrets'
+            }),
             secretComponent(secretId) {
-                return this.$store.state.userUnlockedSecrets.includes(secretId) ? 'unlocked-secret' : 'locked-secret';
+                return this.userUnlockedSecrets.includes(secretId) ? 'unlocked-secret' : 'locked-secret';
             },
-            viewSecret(secretId) {
-                this.currentSecret = this.secrets.filter(secret => {
-                    return secret.id == secretId;
-                });
+            viewSecret(index) {
+                this.currentSecret = this.secrets[index]
                 this.secretDialogVisible = true;
             },
-
             loadSecrets() {
                 this.page++;
                 this.getSecrets();
             },
-
             handleSecret(secretId) {
-                if (this.$store.state.userUnlockedSecrets.includes(secretId)) {
+                if (this.userUnlockedSecrets.includes(secretId)) {
                     this.viewSecret(secretId)
                 }
                 let formData = new FormData();
@@ -64,25 +72,16 @@
                     headers: {"Content-Type": "multipart/form-data"}
                 })
                     .then(res => {
-                        if (res.status == '200') {
-                            this.$store.dispatch('updateUserUnlockedSecrets', secretId);
+                        if (res.status === 200) {
+                            this.update(secretId);
                         }
                     })
             },
-
             getSecrets() {
                 this.isLoading = true;
-                axios.get('/secret/get_paginated_secrets?page=' + this.page, {
-                    params: {
-                        numOfItems: this.numOfItems,
-                    }
-                })
-                    .then(response => {
-                        this.isLoading = false
-                        if (this.secrets.length == 0) {
-                            this.secrets = response.data.data.data;
-                        } else this.secrets = [].concat(this.secrets, response.data.data.data);
-                    });
+                this.get(this.page).then(() => {
+                    this.isLoading = false;
+                });
             }
         },
     }

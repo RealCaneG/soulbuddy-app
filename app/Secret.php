@@ -41,7 +41,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Secret extends Model
 {
-    protected $fillable = ['title', 'body', 'price', 'description', 'is_rated', 'is_free', 'overall_rating', 'user_id'];
+    protected $fillable = ['title', 'body', 'category_id', 'price', 'description', 'is_rated', 'is_free', 'overall_rating', 'user_id'];
     public function author() {
         return $this->belongsTo('App\User', 'user_id');
     }
@@ -54,5 +54,9 @@ class Secret extends Model
     public function ratings()
     {
         return $this->hasMany('App\Rating', 'secret_id');
+    }
+
+    public function category() {
+        return $this->belongsTo('App\Category', 'category_id', 'id');
     }
 }

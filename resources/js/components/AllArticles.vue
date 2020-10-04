@@ -27,17 +27,19 @@
 
 <script>
     import {articleMixin} from "../helpers/articleMixin";
+    import {mapActions} from "vuex";
     import Avatar from "vue-avatar/src/Avatar";
-    import moment from "moment";
     import ArticleListingBase from "./ArticleListingBase";
 
     export default {
         components: {ArticleListingBase, Avatar},
         mixins: [articleMixin],
         name: "all-articles",
+        props:['category'],
         computed: {
             articles() {
-                return this.$store.state.articles
+                if (this.category === null) return this.$store.state.articles
+                return this.$store.state.articles.filter(article => article.category.id === this.category);
             },
         },
         data() {
@@ -53,6 +55,10 @@
             this.getArticles();
         },
         methods: {
+
+            ...mapActions({
+               get: 'getPaginatedArticles'
+            }),
             viewArticle(articleIndex) {
                 if (!this.articleDialogVisible) {
                     console.log('click')
@@ -68,7 +74,7 @@
 
             getArticles() {
                 this.isLoading = true;
-                this.$store.dispatch('getPaginatedArticles', this.page).then(() => {
+                this.get(this.page).then(() => {
                     this.isLoading = false;
                 });
             }

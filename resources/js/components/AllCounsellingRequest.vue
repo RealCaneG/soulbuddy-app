@@ -1,6 +1,6 @@
 <template>
     <div class="row list" v-infinite-scroll="loadRequests" infinite-scroll-throttle-delay="3000">
-        <div class="col-md-4 list-item" v-for="(request, i) in requests" :key=i>
+        <div class="col-md-4 list-item" v-for="(request, i) in counsellingRequest" :key=i>
             <div class="card mt-4">
                 <div class="card-header">
                     <p class="h1 mb-2">
@@ -46,10 +46,12 @@
 
 <script>
     import {articleMixin} from "../helpers/articleMixin";
+    import {mapActions} from "vuex";
     import Avatar from "vue-avatar/src/Avatar";
     import moment from "moment";
 
     export default {
+        props: ["category"],
         components: {Avatar},
         mixins: [articleMixin],
         name: "all-counselling-request",
@@ -58,15 +60,22 @@
                 isLoading: false,
                 requestDialogVisible: false,
                 currentRequest: '',
-                requests: [],
                 numOfItems: 30,
                 page: 1,
             };
+        },
+        computed: {
+            counsellingRequest() {
+                if (this.category === null)
+                    return this.$store.state.counsellingRequests;
+                return this.$store.state.counsellingRequests.filter(request => request.category.id === this.category)
+            },
         },
         beforeMount() {
             this.getRequests();
         },
         methods: {
+            ...mapActions({get: 'getPaginatedCounsellingRequest'}),
             getRequestIcon(category) {
                 let icon = 'question-circle-fill';
                 switch (category.category) {
@@ -107,7 +116,6 @@
 
             viewRequest(requestIndex) {
                 this.currentRequest = this.requests[requestIndex];
-                console.log(this.currentRequest);
                 this.requestDialogVisible = true;
             },
 
@@ -118,22 +126,10 @@
 
             getRequests() {
                 this.isLoading = true;
-                axios.get('/counselling/get_paginated_request?page=' + this.page, {
-                    params: {
-                        numOfItems: this.numOfItems,
-                    }
-                })
-                    .then(response => {
-                        this.isLoading = false
-                        if (this.requests.length == 0) {
-                            this.requests = response.data.data;
-                        } else this.requests = [].concat(this.requests, response.data.data);
-                        console.log('Requests = ', response.data.data);
-                    });
+                this.get(this.page);
             }
         },
     }
 </script>
-
 <style scoped>
 </style>

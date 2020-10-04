@@ -24,7 +24,7 @@ class SecretController extends Controller
 
     public function getPaginatedSecrets(Request $request)
     {
-        $secrets = Secret::with('author')->orderBy('created_at', 'desc')->paginate($request->numOfItems);
+        $secrets = Secret::with('author', 'category')->orderBy('created_at', 'desc')->paginate($request->numOfItems);
         return response()->json(['error' => false, 'data' => $secrets]);
     }
 
@@ -40,15 +40,16 @@ class SecretController extends Controller
         $title = $request->title;
         $description = $request->description;
         $body = $request->body;
+        $category = $request->categoryId;
         $images = $request->images;
         $price = $request->price;
         $isFree = $price == 0;
-
 
         $secret = Secret::create([
             'title' => $title,
             'description' => $description,
             'body' => $body,
+            'category_id' => $category,
             'user_id' => $user->id,
             'price' => $price,
             'is_free' => $isFree

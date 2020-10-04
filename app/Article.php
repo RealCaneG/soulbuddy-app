@@ -40,7 +40,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Article extends Model
 {
-    protected $fillable = ['title', 'body', 'user_id'];
+    protected $fillable = ['title', 'body', 'user_id', 'category_id'];
 
     public function author() {
         return $this->belongsTo('App\User', 'user_id');
@@ -52,6 +52,10 @@ class Article extends Model
 
     public function ratings() {
         return $this->hasMany('App\Rating', 'article_id');
+    }
+
+    public function category() {
+        return $this->belongsTo('App\Category', 'category_id', 'id');
     }
 
 }

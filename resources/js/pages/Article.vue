@@ -3,10 +3,10 @@
         <h2 slot="bannerHeader">Articles</h2>
         <p slot="bannerDescription"></p>
         <div slot="tools">
-            <!-- <div class="row">
-                 <div class="col-md-8 tools-desc"><p></p></div>
-                 <b-form-select class="col-md-4" :options="this.categories" v-model="category"></b-form-select>
-             </div>-->
+            <div class="row">
+                <div class="col-md-8 tools-desc"><p></p></div>
+                <b-form-select class="col-md-4" :options="this.categories" v-model="category"></b-form-select>
+            </div>
 
             <div class="wrapper-center">
                 <b-button v-b-modal.create-article-modal @click="$bvModal.show('create-article-modal')">Write an
@@ -26,7 +26,7 @@
             </b-modal>
         </div>
         <template>
-            <all-articles-component slot="content"></all-articles-component>
+            <all-articles-component slot="content" :category="category"></all-articles-component>
         </template>
     </page-template>
 </template>
@@ -39,14 +39,14 @@
         components: {PageTemplate},
         data() {
             return {
-                categories: [{text: 'Choose', value: null}],
+                categories: this.$store.state.categories,
                 category: null,
             }
         },
-        async mounted() {
-            const res = await axios.get('/counselling/get_categories');
-            console.log(res.data);
-            res.data.forEach(cat => this.categories.push({'text': cat.category, 'value': cat.id}))
+        mounted() {
+            if (this.$store.state.categories.length <= 1) {
+                this.$store.dispatch('getCategories')
+            }
         },
 
         methods: {

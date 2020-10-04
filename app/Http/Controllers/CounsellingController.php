@@ -19,7 +19,8 @@ class CounsellingController extends Controller
      */
     public function getPaginatedCounsellingRequest(Request $request)
     {
-        return CounsellingRequest::with('category')->with('owner')->orderBy('expiry_date')->paginate($request->numberOfItems);
+        return response()->json(['error' => false,
+            'data' => CounsellingRequest::with('category')->with('owner')->orderBy('expiry_date')->paginate($request->numberOfItems)]);
     }
 
     /**
@@ -70,7 +71,7 @@ class CounsellingController extends Controller
         $userCounsellingRecord->save();
         \DB::commit();
 
-        return \response()->json(['error'=> false, 'message' => 'Request submitted']);
+        return \response()->json(['error' => false, 'message' => 'Request submitted']);
     }
 
     public function amendCasualCounsellingRequest(Request $request)
