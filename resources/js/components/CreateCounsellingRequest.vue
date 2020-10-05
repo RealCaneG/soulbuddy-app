@@ -37,7 +37,6 @@
                     required
                 ></b-form-textarea>
             </b-form-group>
-
             <div class="flex justify-content-between">
                 <b-button type="submit" variant="primary">Submit</b-button>
                 <b-button type="reset" variant="danger">Reset</b-button>

@@ -19,7 +19,7 @@ class ArticleController extends Controller
 
     public function getPaginatedArticles(Request $request)
     {
-        $articles = Article::with('articleImages', 'author', 'ratings')->orderBy('created_at', 'desc')->paginate($request->numOfItems);
+        $articles = Article::with('articleImages', 'author', 'ratings', 'category')->orderBy('created_at', 'desc')->paginate($request->numOfItems);
         return  response()->json(['error' => false, 'data' => $articles]);
     }
 
@@ -29,11 +29,13 @@ class ArticleController extends Controller
         $title = $request->title;
         $body = $request->body;
         $images = $request->images;
+        $categoryId = $request->cetegoryId;
 
         $article = Article::create([
             'title' => $title,
             'body' => $body,
             'user_id' => $user->id,
+            'category_id' => $categoryId
         ]);
 
         if ($images !== null){

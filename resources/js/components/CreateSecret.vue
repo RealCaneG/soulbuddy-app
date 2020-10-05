@@ -20,6 +20,17 @@
                         required
                     />
                 </div>
+                <b-form-group
+                    id="input-group-1"
+                    label="Category"
+                    label-for="input-1">
+                    <b-form-select
+                        id="input-1"
+                        v-model="category"
+                        :options="categories"
+                        placeholder="Select a category"
+                    ></b-form-select>
+                </b-form-group>
                 <div class="form-group">
                     <label for="secret-description">Secret Description</label>
                     <textarea placeholder="Describe what your secret is about." maxlength="100" v-model="description" class="form-control" id="secret-description" rows="2" required></textarea>
@@ -88,7 +99,9 @@
                 description: "",
                 price: 0,
                 body: "",
-                componentKey: 0
+                componentKey: 0,
+                category: null,
+                categories: this.$store.state.categories,
             };
         },
         computed: {},
@@ -114,6 +127,7 @@
                 formData.append("body", this.body);
                 formData.append('description', this.description);
                 formData.append("price", this.price);
+                formData.append("categoryId", this.category);
                 this.$emit('onSubmit', formData);
             },
             validateForm() {
@@ -126,6 +140,11 @@
                 if (!this.body) {
                     this.status = false;
                     this.showNotification("Secret body cannot be empty");
+                    return false;
+                }
+                if (!this.category) {
+                    this.status = false;
+                    this.showNotification("Please select a category");
                     return false;
                 }
                 return true;

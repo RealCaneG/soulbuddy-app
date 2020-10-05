@@ -16,17 +16,17 @@
             <b-modal class="dialog" busy="true" centered id="create-request-modal">
                 <template v-slot:modal-title>
                     <h2>Counselling Request</h2>
-                    <!---->
                 </template>
                 <create-counselling-request :all-categories="categories"
                                             v-on:onSubmit="submitForm"></create-counselling-request>
                 <template v-slot:modal-footer>
-                    <p>Please fill out the form above to request a casual counselling and connect to your soul buddy. Each successfully matched counselling will cost 5 vouchers from your account</p>
+                    <p>Please fill out the form above to request a casual counselling and connect to your soul buddy.
+                        Each successfully matched counselling will cost 5 vouchers from your account</p>
                 </template>
             </b-modal>
         </div>
         <template>
-            <all-counselling-request slot="content"></all-counselling-request>
+            <all-counselling-request slot="content" :category="category"></all-counselling-request>
         </template>
     </page-template>
 </template>
@@ -40,26 +40,26 @@
         components: {CreateCounsellingRequest, PageTemplate},
         data() {
             return {
-                categories: [{text: 'Choose', value: null}],
+                categories: this.$store.state.categories,
                 category: null,
+                isLoading: false,
             }
         },
-        async mounted() {
-            const res = await axios.get('/counselling/get_categories');
-            //console.log(res.data);
-            res.data.forEach(cat => this.categories.push({'text': cat.category, 'value': cat.id}))
+        mounted() {
+            if (this.$store.state.categories.length <= 1)
+                this.$store.dispatch('getCategories');
         },
-
         methods: {
             openDialog() {
 
             },
-
             submitForm(formData) {
+                this.isLoading = true;
                 axios.post('/counselling/create_counselling_request',
                     formData).then(response => {
-                    //console.log('Success');
                     this.$bvModal.hide('create-request-modal');
+                    this.$store.dispatch('refreshCounsellingRequest', 1);
+                    this.isLoading = false;
                 })
             },
         }

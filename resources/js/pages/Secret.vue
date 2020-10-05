@@ -3,10 +3,10 @@
         <h2 slot="bannerHeader">Secrets</h2>
         <p slot="bannerDescription"></p>
         <div slot="tools">
-            <!-- <div class="row">
-                 <div class="col-md-8 tools-desc"><p></p></div>
-                 <b-form-select class="col-md-4" :options="this.categories" v-model="category"></b-form-select>
-             </div>-->
+            <div class="row">
+                <div class="col-md-8 tools-desc"><p></p></div>
+                <b-form-select class="col-md-4" :options="this.categories" v-model="category"></b-form-select>
+            </div>
 
             <div class="wrapper-center">
                 <b-button v-b-modal.create-secret-modal @click="$bvModal.show('create-secret-modal')">Write a
@@ -26,7 +26,7 @@
             </b-modal>
         </div>
         <template>
-            <all-secrets-component slot="content"></all-secrets-component>
+            <all-secrets-component slot="content" :category="category"></all-secrets-component>
         </template>
     </page-template>
 </template>
@@ -39,24 +39,22 @@
         components: {PageTemplate},
         data() {
             return {
-                categories: [{text: 'Choose', value: null}],
+                categories: this.$store.getters.getCategories,
                 category: null,
             }
         },
         beforeMount() {
             this.$store.dispatch('getUserUnlockedSecrets');
         },
-        async mounted() {
-            const res = await axios.get('/counselling/get_categories');
-            console.log(res.data);
-            res.data.forEach(cat => this.categories.push({'text': cat.category, 'value': cat.id}))
+        mounted() {
+            if (this.$store.state.categories.length <= 1) {
+                this.$store.dispatch('getCategories')
+            }
         },
-
         methods: {
             openDialog() {
 
             },
-
             submitForm(formData) {
                 axios
                     .post("/secret/create_secret", formData, {
@@ -66,7 +64,8 @@
                         this.$bvModal.hide('create-secret-modal');
                         this.$store.dispatch('refreshSecrets', 1)
                     });
-            },
+            }
+            ,
         }
     }
 </script>

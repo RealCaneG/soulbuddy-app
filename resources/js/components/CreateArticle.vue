@@ -19,6 +19,17 @@
                         required
                     />
                 </div>
+                <b-form-group
+                    id="input-group-1"
+                    label="Category"
+                    label-for="input-1">
+                    <b-form-select
+                        id="input-1"
+                        v-model="category"
+                        :options="categories"
+                        placeholder="Select a category"
+                    ></b-form-select>
+                </b-form-group>
                 <div class="form-group">
                     <label for="article-content">Article Content</label>
                     <textarea v-model="body" class="form-control" id="article-content" rows="3" required></textarea>
@@ -80,18 +91,19 @@
     import { mapState, mapActions } from "vuex";
     export default {
         name: "create-article",
-        props: ["articles"],
         data() {
             return {
                 dialogImageUrl: "",
                 dialogVisible: false,
                 imageList: [],
                 status_msg: "",
+                category: null,
                 status: "",
                 isCreatingArticle: false,
                 title: "",
                 body: "",
-                componentKey: 0
+                componentKey: 0,
+                categories: this.$store.state.categories
             };
         },
         computed: {},
@@ -115,7 +127,8 @@
                 let formData = new FormData();
                 formData.append("title", this.title);
                 formData.append("body", this.body);
-                $.each(this.imageList, function(key, image) {
+                formData.append("categoryId", this.category);
+                $.each(that.imageList, function(key, image) {
                     formData.append(`images[${key}]`, image);
                 });
                 this.$emit('onSubmit', formData);
@@ -130,6 +143,11 @@
                 if (!this.body) {
                     this.status = false;
                     this.showNotification("Article body cannot be empty");
+                    return false;
+                }
+                if (this.category === null) {
+                    this.status = false;
+                    this.showNotification("Please select a category");
                     return false;
                 }
                 return true;
