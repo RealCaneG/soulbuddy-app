@@ -84,8 +84,7 @@
                 </li>
             </ul>
         </nav>
-        <router-view class="main">
-        </router-view>
+        <router-view class="main"></router-view>
         <div class="dialog" v-if="this.isDialogWindowOpen">
             <chat-component :user="this.user" class="dialog" v-if="isChatroomSelected"></chat-component>
         </div>
@@ -226,6 +225,7 @@
         box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 0.06);
         width: 5rem;
         height: 100vh;
+        z-index: 99999;
     }
 
     .navbar-nav {

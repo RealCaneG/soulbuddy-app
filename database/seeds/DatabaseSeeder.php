@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             CounsellingRequestSeeder::class,
             TransactionTypeSeeder::class,
-            TransactionStatusSeeder::class
+            TransactionStatusSeeder::class,
+            PricingSeeder::class,
             ]);
     }
 }
