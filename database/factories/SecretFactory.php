@@ -9,7 +9,7 @@ $factory->define(\App\Secret::class, function (Faker $faker) {
         'user_id' => $faker->numberBetween(1, 100),
         'title' => $faker->unique()->sentence,
         'body' => $faker->paragraph(5),
-        'category' => $faker->numberBetween(1, 7),
+        'category_id' => $faker->numberBetween(1, 7),
         'description' => $faker->paragraph(2),
         'overall_rating' => 0,
         'is_rated' => false,

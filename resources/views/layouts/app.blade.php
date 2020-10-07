@@ -25,7 +25,7 @@
 </head>
 <body>
 <script
-    src="https://www.paypal.com/sdk/js?client-id={{ config('paypal.client_id') }}&currency=HKD"> // Required. Replace SB_CLIENT_ID with your sandbox client ID.
+    src="https://www.paypal.com/sdk/js?client-id=AQhyI3cTNVl9ALesPCZA_IV-fmJ0TU9-NDMNtAAsiD2PyiW0t_JFKtgW6mPpP8jlqx0u7736WMBXr_Qm&currency=HKD">
 </script>
 <style type="text/css">
     @font-face {

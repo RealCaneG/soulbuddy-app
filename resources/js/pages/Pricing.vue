@@ -1,8 +1,8 @@
 <template>
-    <b-container>
-        <b-row>
-            <b-col v-for="(pricing, i) in pricings.data" :key=i>
-                <b-card class="mt-4 mb-4 text-center">
+    <div class="main">
+        <div class="pricing-wrapper">
+            <div v-for="(pricing, i) in pricings.data" :key=i @click="generateButton(pricing.price, i)">
+                <b-card class="pricing-item mt-4 mb-4 text-center">
                     <b-card-header class="h3 font-weight-bold"> {{ pricing.token }} Tokens</b-card-header>
                     <b-card-text class="h1">
                         <b-icon icon="gem" font-scale="4" animation="throb"></b-icon>
@@ -12,19 +12,17 @@
                     </b-card-text>
                     <b-card-text>
                         <hr>
-                        <div class="mt-1 mb-1" id="paypal-button-container"></div>
+                        <div class="mt-1 mb-1" :id="'paypal-button-container-' + i"></div>
                     </b-card-text>
                 </b-card>
-            </b-col>
-        </b-row>
-    </b-container>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
     export default {
         name: "Pricing",
-        props: ["totalPrice"]
-        ,
         data() {
             return {
                 pricings: {},
@@ -34,41 +32,44 @@
         },
         mounted() {
             const theTotalPrice = this.getTotalPrice();
-            paypal.Buttons({
-                createOrder: (data, actions) => {
-                    // This function sets up the details of the transaction, including the amount and line item details.
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: theTotalPrice,
-                                currency_code: 'HKD',
-                            }
-                        }],
-                        application_context: {
-                            shipping_preference: 'NO_SHIPPING'
-                        }
-                    });
-                },
-                onApprove: (data, actions) => {
-                    // This function captures the funds from the transaction.
-                    return actions.order.capture().then(details => {
-                        // This function shows a transaction success message to your buyer.
-                        console.log('Details =', details);
-                        this.captureTransaction(details);
-                        alert('Transaction completed by ' + details.payer.name.given_name);
-                    });
-                },
-                onCancel: function (data) {
-                    // Show a cancel page, or return to cart
-                }
-            }).render('#paypal-button-container');
         },
         beforeMount() {
             this.getPricings();
             this.totalPrice = '50';
-
         },
         methods: {
+            generateButton(price, index) {
+                let child = document.getElementById(`paypal-button-container-${index}`).firstChild;
+                if (child != null) child.remove();
+                paypal.Buttons({
+                    createOrder: (data, actions) => {
+                        // This function sets up the details of the transaction, including the amount and line item details.
+                        return actions.order.create({
+                            purchase_units: [{
+                                amount: {
+                                    value: price,
+                                    currency_code: 'HKD',
+                                }
+                            }],
+                            application_context: {
+                                shipping_preference: 'NO_SHIPPING'
+                            }
+                        });
+                    },
+                    onApprove: (data, actions) => {
+                        // This function captures the funds from the transaction.
+                        return actions.order.capture().then(details => {
+                            // This function shows a transaction success message to your buyer.
+                            console.log('Details =', details);
+                            this.captureTransaction(details);
+                            alert('Transaction completed by ' + details.payer.name.given_name);
+                        });
+                    },
+                    onCancel: function (data) {
+                        // Show a cancel page, or return to cart
+                    }
+                }).render(`#paypal-button-container-${index}`);
+            },
 
             getTotalPrice() {
                 return this.totalPrice;
@@ -113,6 +114,7 @@
     }
 </script>
 
+
 <style scoped>
     .card {
         max-width: 20rem;
@@ -120,5 +122,15 @@
 
     .card-header {
         background-color: #ffffff;
+    }
+
+    .pricing-item {
+        margin-right: 2rem;
+    }
+
+    .pricing-wrapper {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
     }
 </style>

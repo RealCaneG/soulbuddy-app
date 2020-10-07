@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $user_id
  * @property string $title
  * @property string $body
+ * @property string $category_id
  * @property float $price
  * @property float $overall_rating
  * @property int $is_rated
