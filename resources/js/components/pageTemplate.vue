@@ -31,4 +31,8 @@
         flex-direction: column;
         justify-content: center;
     }
+
+    .tools {
+        padding: 0 5rem 0 5rem;
+    }
 </style>

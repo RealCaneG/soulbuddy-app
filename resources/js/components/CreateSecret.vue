@@ -12,7 +12,7 @@
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input
-                        v-model="title"
+                        v-model="form.title"
                         type="text"
                         class="form-control"
                         id="title"
@@ -26,23 +26,28 @@
                     label-for="input-1">
                     <b-form-select
                         id="input-1"
-                        v-model="category"
+                        v-model="form.category"
                         :options="categories"
                         placeholder="Select a category"
                     ></b-form-select>
                 </b-form-group>
                 <div class="form-group">
                     <label for="secret-description">Secret Description</label>
-                    <textarea placeholder="Describe what your secret is about." maxlength="100" v-model="description" class="form-control" id="secret-description" rows="2" required></textarea>
+                    <textarea placeholder="Describe what your secret is about." maxlength="100" v-model="form.description" class="form-control" id="secret-description" rows="2" required></textarea>
                     <label for="secret-description">100 characters max</label>
                 </div>
                 <div class="form-group">
                     <label for="secret-content">Secret Content</label>
-                    <textarea placeholder="Only the users who unlock this secret will be about to see" v-model="body" class="form-control" id="secret-content" rows="5" required></textarea>
+                    <textarea placeholder="Only the users who unlock this secret will be about to see" v-model="form.body" class="form-control" id="secret-content" rows="5" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="price">Vouchers to Unlock</label>
-                    <b-form-spinbutton id="price" v-model="price" min="1" max="25"></b-form-spinbutton>
+                    <label for="price-spinner">Vouchers to Unlock</label>
+                    <b-form-spinbutton id="price-spinner" v-model="form.price" min="1" max="25"></b-form-spinbutton>
+                </div>
+                <div>
+                    <b-form-group id="input-group-3" label="Expiry Date" label-for="input-date">
+                        <b-form-datepicker id="input-date" v-model="form.expiryDate" class="mb-2"></b-form-datepicker>
+                    </b-form-group>
                 </div>
             </form>
         </div>
@@ -102,10 +107,16 @@
                 componentKey: 0,
                 category: null,
                 categories: this.$store.state.categories,
+                form: {
+                    title: '',
+                    category: '',
+                    description: '',
+                    body: '',
+                    price: 0,
+                    expiryDate: new Date().toISOString().slice(0, 10)
+                }
             };
         },
-        computed: {},
-        mounted() {},
         methods: {
             updateImageList(file) {
                 this.imageList.push(file.raw);
@@ -120,29 +131,26 @@
                 if (!this.validateForm()) {
                     return false;
                 }
-                const that = this;
                 this.isCreatingSecret = true;
-                let formData = new FormData();
-                formData.append("title", this.title);
-                formData.append("body", this.body);
-                formData.append('description', this.description);
-                formData.append("price", this.price);
-                formData.append("categoryId", this.category);
+                const formData = new FormData();
+                formData.append('data', JSON.stringify(this.form));
+                console.log(this.form)
+                console.log(formData.entries())
                 this.$emit('onSubmit', formData);
             },
             validateForm() {
                 //no vaildation for images - it is needed
-                if (!this.title) {
+                if (!this.form.title) {
                     this.status = false;
                     this.showNotification("Secret title cannot be empty");
                     return false;
                 }
-                if (!this.body) {
+                if (!this.form.body) {
                     this.status = false;
                     this.showNotification("Secret body cannot be empty");
                     return false;
                 }
-                if (!this.category) {
+                if (!this.form.category) {
                     this.status = false;
                     this.showNotification("Please select a category");
                     return false;

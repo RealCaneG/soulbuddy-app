@@ -205,9 +205,9 @@
 
     * {
         --bg-primary: #fff;
-        --bg-secondary: #6c757d;
+        --bg-secondary: #d3d8e452;
         --text-primary: #333;
-        --text-secondary: #F63854;
+        --text-secondary: #e861a2;
         --transition-speed: 500ms;
     }
 

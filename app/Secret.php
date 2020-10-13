@@ -42,7 +42,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Secret extends Model
 {
-    protected $fillable = ['title', 'body', 'category_id', 'price', 'description', 'is_rated', 'is_free', 'overall_rating', 'user_id'];
+    protected $fillable = ['title', 'body', 'category_id', 'price', 'description', 'is_rated', 'is_free', 'overall_rating', 'user_id', 'expiry_date'];
     public function author() {
         return $this->belongsTo('App\User', 'user_id');
     }

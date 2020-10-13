@@ -23,6 +23,6 @@ $factory->define(\App\CounsellingRequest::class, function (Faker $faker) {
         'category_id' => $faker->numberBetween(1, 7),
         'expiry_date' => $faker->dateTimeBetween('now', '+30 days')->format('Y-m-d'),
         'description' => $faker->paragraph(5),
-        'maker_id' => $faker->numberBetween(1, 104)
+        'maker_id' => $faker->numberBetween(1, 30)
     ];
 });

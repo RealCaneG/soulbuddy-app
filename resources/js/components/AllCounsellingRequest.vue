@@ -1,6 +1,6 @@
 <template>
     <div class="row list" v-infinite-scroll="loadRequests" infinite-scroll-throttle-delay="3000">
-        <div class="col-md-4 list-item" v-for="(request, i) in counsellingRequest" :key=i>
+        <div class="col-md-4 list-item" v-for="(request, i) in counsellingRequests" :key=i>
             <div class="card mt-4">
                 <div class="card-header">
                     <p class="h1 mb-2">
@@ -65,7 +65,8 @@
             };
         },
         computed: {
-            counsellingRequest() {
+            counsellingRequests() {
+                console.log(this.$store.state.counsellingRequests)
                 if (this.category === null)
                     return this.$store.state.counsellingRequests;
                 return this.$store.state.counsellingRequests.filter(request => request.category.id === this.category)

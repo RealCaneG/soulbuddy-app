@@ -1,21 +1,24 @@
 <template>
-    <div class="main">
-        <div class="header">{{ article.title }}</div>
-        <div class="info-container">
-            <div class="d-flex profile-inline">
-                <avatar v-bind:username="this.article.author.name"></avatar>
-                <div class="infos">
-                    <div class="name">{{ article.author.name }}</div>
-                    <div>{{ dateFormat(article.created_at) }}</div>
+    <div class="main" @click="$emit('viewArticle')">
+
+        <img v-if="article.article_images[0] != null" :src="article.article_images[0].article_image_path"
+             class="article-img" alt="/images/logo.png">
+        <img v-else src="/images/no_img.jpg" class="article-img-secondary" alt="">
+        <div class="header">{{ truncateText(article.title, 0, 60) }}</div>
+        <customized-star-rating class='star-rating' :object="article" :type="article"></customized-star-rating>
+        <div class="body">
+            <p> {{ truncateText(article.body, 0, 80) }}</p>
+        </div>
+        <div class="footer">
+            <div class="info-container">
+                <div class="d-flex profile-inline">
+                    <avatar v-bind:username="this.article.author.name"></avatar>
+                    <div class="infos">
+                        <div class="name"> by {{ article.author.name }}</div>
+                        <div>posted on {{ dateFormat(article.created_at) }}</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="body">
-            <p> {{ truncateText(article.body, 0, 300) }}</p>
-        </div>
-        <button @click="$emit('viewArticle')">Read more</button>
-        <div class="footer">
-            <customized-star-rating :object="article" :type="article"></customized-star-rating>
         </div>
     </div>
 </template>
@@ -34,14 +37,27 @@
 
 <style scoped>
     .footer {
-        border-bottom: 1px solid #d8d8d8;
-        max-width: 50rem;
-        margin-bottom: 50px;
+        margin-bottom: 2rem;
+    }
+
+    .article-img {
+        height: 300px;
+        width: 100%;
+    }
+
+    .star-rating {
+        padding-left: 1.5rem;
+    }
+
+    .article-img-secondary {
+        width: 100%;
     }
 
     .main {
-        box-shadow: 5px 5px rgb(0, 0, 0, 0.06);
-
+        box-shadow: 0 10px 15px 0 rgba(46, 51, 51, .27);
+        border-radius: 1rem;
+        overflow: hidden;
+        margin-bottom: 1rem;
     }
 
     button {
@@ -59,18 +75,19 @@
     }
 
     .body {
-        padding: 20px;
+        padding: 1.9rem;
+        font-size: .8rem;
         max-width: 50rem;
-        font-family: Arvo, SansSerif, Sana;
-        color: #2a2a2a;
+        font-family: Arvo, SansSerif, Sana, serif;
+        color: #484848;
     }
 
     .header {
-        border-left: 3px solid #F63854;
-        padding-left: 10px;
-        font-weight: 500;
+        padding: 1rem 0 0 10px;
+        text-align: center;
         font-family: Arvo, serif;
-        font-size: 32px;
+        font-size: 1.5rem;
+        font-weight: 700;
     }
 
     .infos {
