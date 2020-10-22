@@ -10,6 +10,8 @@ use App\UserTransaction;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use PHPUnit\Util\Json;
+use function MongoDB\BSON\toJSON;
 
 class RegisterController extends Controller
 {
@@ -66,10 +68,12 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        error_log('data' . \GuzzleHttp\json_encode($data));
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'user_type' => $data['userType'] == 'provider' ? 1 : 0
         ]);
 
         UserBalance::create([

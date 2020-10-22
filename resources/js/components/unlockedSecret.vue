@@ -1,25 +1,32 @@
 <template>
-    <div class="outer">
-        <div class="info">
-            <div class="profile">
-                <avatar v-bind:username="this.secret.author.name"></avatar>
-                <span>{{ this.secret.author.name }}</span>
-            </div>
-
-        </div>
-        <b-card :title="this.secret.title">
-            <b-card-text> {{ truncateText(this.secret.description, 0, 100) }}</b-card-text>
-            <b-card-footer class="description">
+    <div>
+        <div class="main" @click="handleSecret">
+            <div class="top-container">
                 <div>
-                    created at {{ dateFormat(this.secret.created_at) }}
+                    <div class="header">
+                        <div style="text-align: left">
+                            [{{this.secret.category.category}}]
+                        </div>
+                        <div>
+                            {{ truncateText(this.secret.title, 0, 60) }}
+                        </div>
+                    </div>
+                    <div class="body">
+                        <p> {{ truncateText(secret.body, 0, 80) }}</p>
+                    </div>
                 </div>
-            </b-card-footer>
-        </b-card>
-        <div>
-            <b-button class="button" @click="handleSecret">
-                <b-icon-unlock-fill variant="light"></b-icon-unlock-fill>
-                <span>View Secret</span>
-            </b-button>
+            </div>
+            <div class="footer">
+                <div class="info-container">
+                    <div class="d-flex profile-inline">
+                        <avatar v-bind:username="this.secret.author.name"></avatar>
+                        <div class="infos">
+                            <div class="name"> by {{ this.secret.author.name }}</div>
+                            <div> available until {{ dateFormat(secret.expiry_date) }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -42,33 +49,60 @@
 </script>
 
 <style scoped>
-    .description {
-        background: white;
-        font-weight: 500;
-        font-size: 14px;
+    .main {
+        padding: 1rem;
+        box-shadow: 0 10px 15px 0 rgba(46, 51, 51, .27);
+        border-radius: 1rem;
+        overflow: hidden;
+        margin-bottom: 1rem;
     }
 
-    .outer {
-        border-radius: 10px;
-        border: 1px solid #F63854
+    .body {
+        padding-top: 1.9rem;
+        font-size: .8rem;
+        max-width: 50rem;
+        font-family: Arvo, SansSerif, Sana, serif;
+        color: #484848;
     }
 
-    .profile {
-        padding: 10px 20px;
+    .header {
+        text-align: left;
+        font-family: Arvo, serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .top-container {
         display: flex;
-        align-items: center;
-        font-weight: 800;
+        flex-direction: row;
+        padding: 1rem;
     }
 
-    .profile span {
-        padding-left: 10px;
+    .infos {
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-left: 10px;
+        font-size: 12px;
+        font-family: Arvo, serif;
+        font-weight: 700;
+        color: #6c757d;
     }
 
-    .button {
-        width: 100%;
-        border-radius: 0 0 10px 10px;
-        background-color: #5B995B;
-        font-weight: 500;
+    .unlock {
+        display: flex;
+        flex-direction: column;
+    }
 
+    .unlock label {
+        font-size: .8rem;
+        color: #F63854;
+        text-align: center;
+    }
+
+    .info-container {
+    }
+
+    .profile-inline {
+        padding: 20px;
     }
 </style>

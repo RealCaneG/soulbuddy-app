@@ -2,12 +2,11 @@
     <page-template>
         <h2 slot="bannerHeader">Articles</h2>
         <p slot="bannerDescription"></p>
-        <div slot="tools">
+        <div slot="tools" class="tool-container">
             <div class="row">
                 <div class="col-md-8 tools-desc"><p></p></div>
                 <b-form-select class="col-md-4" :options="this.categories" v-model="category"></b-form-select>
             </div>
-
             <div class="wrapper-center">
                 <b-button v-b-modal.create-article-modal @click="$bvModal.show('create-article-modal')">Write an
                     Article
@@ -78,6 +77,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .tool-container {
+        background-image: url("/images/article-banner.jpg");
+        background-repeat: no-repeat;
+        background-size: 100%;
+        background-position: center;
+        height: 100%;
     }
 
     .tools-desc {

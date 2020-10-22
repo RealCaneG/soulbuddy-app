@@ -1,8 +1,8 @@
 <template>
     <div class="row list" v-infinite-scroll="loadSecrets" infinite-scroll-throttle-delay="3000">
-        <div class="col-md-12 list-item" v-for="(secret, i) in secrets" :key=i>
+        <div class="col-md-4 list-item" v-for="(secret, i) in secrets" :key=i>
             <component :is="secretComponent(secret.id)" v-bind="{secret: secret}"
-                       v-on:handleSecret="handleSecret(i)"></component>
+                       v-on:handleSecret="handleSecret(secret.id)"></component>
         </div>
         <el-dialog v-if="currentSecret" :visible.sync="secretDialogVisible" width="70%">
             <div>

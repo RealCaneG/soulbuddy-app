@@ -2,12 +2,11 @@
     <page-template>
         <h2 slot="bannerHeader">Counselling</h2>
         <p slot="bannerDescription">Seek Comfort from Your Soul Buddy in an Anonymous, affordable and Private Way</p>
-        <div slot="tools">
+        <div slot="tools" class="tool-container">
             <div class="row">
                 <div class="col-md-8 tools-desc"><p>Match you to a request that you can help with..</p></div>
                 <b-form-select class="col-md-4" :options="this.categories" v-model="category"></b-form-select>
             </div>
-
             <div class="wrapper-center">
                 <b-button v-b-modal.create-request-modal @click="$bvModal.show('create-request-modal')">Raise Your
                     Request
@@ -76,6 +75,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .tool-container {
+        background-image: url("/images/counselling-banner.jpg");
+        background-repeat: no-repeat;
+        background-size: 100%;
+        background-position: center;
+        height: 100%;
     }
 
     .tools-desc {

@@ -209,6 +209,7 @@
         --text-primary: #333;
         --text-secondary: #e861a2;
         --transition-speed: 500ms;
+        --theme-color: #F63854;
     }
 
     .navbar-brand img {
@@ -295,7 +296,7 @@
         position: fixed;
         top: 70px;
         right: 50px;
-        border: #F63854;
+        border: var(--theme-color);
     }
 
     .nav-item {

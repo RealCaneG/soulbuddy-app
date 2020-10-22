@@ -26,7 +26,7 @@ class SecretController extends Controller
 
     public function getPaginatedSecrets(Request $request)
     {
-        $secrets = Secret::with('author', 'category')->where('expiry_date', '<=', date('Y-m-d'))->orderBy('created_at', 'desc')->paginate($request->numOfItems);
+        $secrets = Secret::with('author', 'category')->where('expiry_date', '>=', date('Y-m-d'))->orderBy('created_at', 'desc')->paginate($request->numOfItems);
         return response()->json(['error' => false, 'data' => $secrets]);
     }
 
