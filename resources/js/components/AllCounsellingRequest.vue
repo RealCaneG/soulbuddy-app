@@ -12,6 +12,10 @@
                     <p class="card-text" @click="viewRequest(i)"><strong>{{ request.subject }}</strong> <br>
                         {{ truncateText(request.description, 0, 30) }}
                     </p>
+                    <button @click="acceptRequest(request.id)"><b-icon-chat-dots/> Chat</button>
+                    <b-modal id="modal-1" title="BootstrapVue" :visible.sync="confirmBoxVisible">
+                        <p class="my-4">Hello from modal!</p>
+                    </b-modal>
                 </div>
                 <div class="card-footer">
                     <b-container class="">
@@ -59,6 +63,7 @@
             return {
                 isLoading: false,
                 requestDialogVisible: false,
+                confirmBoxVisible: false,
                 currentRequest: '',
                 numOfItems: 30,
                 page: 1,
@@ -77,6 +82,41 @@
         },
         methods: {
             ...mapActions({get: 'getPaginatedCounsellingRequest'}),
+            confirmRequest(isConfirm) {
+                this.confirmBoxVisible = !this.confirmBoxVisible;
+            },
+            acceptRequest(requestId) {
+                let formData = new FormData();
+                formData.append('request_id', requestId);
+                axios.post('/counselling/accept_request', formData, {
+                    headers: {"Content-Type": "multipart/form-data"}
+                })
+                    .then(res => {
+                        if (res.status === 200) {
+                            this.$bvToast.toast(`Thank you for offering a helping hand, you can start chatting once the client approve the request!`, {
+                                title: 'Info',
+                                variant: 'info',
+                                autoHideDelay: 5000,
+                                appendToast: true
+                            })
+                        } else {
+                            this.$bvToast.toast(res.data.message, {
+                                title: 'Error',
+                                variant: 'warning',
+                                autoHideDelay: 5000,
+                                appendToast: true
+                            })
+                        }
+                    }).catch(exp => {
+                    console.log({exp})
+                    this.$bvToast.toast(exp.response.data.message, {
+                        title: 'Error',
+                        variant: 'warning',
+                        autoHideDelay: 5000,
+                        appendToast: true
+                    })
+                })
+            },
             getRequestIcon(category) {
                 let icon = 'question-circle-fill';
                 switch (category.category) {

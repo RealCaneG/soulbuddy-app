@@ -51,6 +51,14 @@ export default new Vuex.Store({
             return commit('updateMessages', message)
         },
 
+        async updateNotificationStatus({commit}, payload) {
+            return commit('updateNotificationStatus', payload)
+        },
+
+        async updateNotification({commit}, payload) {
+            return commit('updateNotifications', payload)
+        },
+
         async getAllArticles({commit}) {
             return commit('setArticles', await axios.get('/article/get_all'))
         },
@@ -116,7 +124,40 @@ export default new Vuex.Store({
                 }
             }
         },
+
+        // UPDATE THIS in Controller Method instead
+        updateNotifications(state, payload) {
+            //console.log('New notification = ', notification);
+            let action = payload.action;
+            let notification = payload.notification;
+            switch (action) {
+                case 'ADD' : {
+                    state.notifications = [...state.notifications, notification];
+                    break;
+                }
+                case 'DELETED': {
+                    let theNotification;
+                    state.notifications.forEach(n, index => {
+                        if (n.id === notification.id) {
+                            n.status = 'Read';
+                            state.notifications.splice(index, 1);
+                            theNotification = n;
+                        }
+                    })
+                    break;
+                }
+                default:
+                    break;
+            }
+        },
+        updateNotificationStatus(state, payload) {
+            let status = payload.status;
+            let notificationId = payload.notification.id;
+            let objectToChange = state.notifications.find(notification => notification.id === notificationId);
+            if (objectToChange) objectToChange.status = status;
+        },
         updateUserUnlockedSecrets(state, secretId) {
+            if (state.userUnlockedSecrets.find(s => s === secretId)) return;
             state.userUnlockedSecrets.push(secretId);
             console.log(state.userUnlockedSecrets);
         },
@@ -170,7 +211,15 @@ export default new Vuex.Store({
             state.notifications = response.data.data;
         },
         setUserUnlockSecret(state, response) {
-            state.userUnlockedSecrets = response.data.data.map(d => d.secret_id);
+            let userUnlockedSecretIds = [];
+            response.data.data.map(d => {
+                console.log('in the loop!')
+                console.log({d})
+                userUnlockedSecretIds.push(d.secret_id)
+            });
+            console.log(`finished looping ${userUnlockedSecretIds}`)
+            state.userUnlockedSecrets = userUnlockedSecretIds;
+            console.log(`the state ${state.userUnlockedSecrets}`)
         },
         setCategories(state, response) {
             let categories = state.categories;

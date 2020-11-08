@@ -13,6 +13,7 @@ class UserSeeder extends Seeder
     {
         factory(\App\User::class, 100)->create()->each(function ($user) {
             $userBalance = factory(\App\UserBalance::class)->make();
+            $rating = factory(\App\CounsellingHelperRating::class)->make();
             $user->userBalance()->save($userBalance);
         });
     }

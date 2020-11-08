@@ -142,20 +142,13 @@
                 })
 
             window.Echo.join('notification')
+                .here(users => console.log('hello notification'))
                 .joining(user => {
+                    console.log('joining notification channel')
                     this.$store.dispatch('updateNotification', {user: user, isRemove: false});
                 })
                 .listen('.notification-' + this.user.id, (event) => {
                     this.$store.dispatch('updateNotification', event.notification);
-                })
-                .listenForWhisper('typing', user => {
-                    this.$store.dispatch('setCurrentUser', user);
-                    if (this.typingTimer) {
-                        clearTimeout(this.typingTimer);
-                    }
-                    this.typingTimer = setTimeout(() => {
-                        this.$store.dispatch('setCurrentUser', false);
-                    }, 1000);
                 })
         },
         methods: {
@@ -232,7 +225,6 @@
     .navbar-nav {
         list-style: none;
         padding: 0;
-        margin-top: 1rem;
         display: flex;
         flex-direction: column;
         align-items: center;

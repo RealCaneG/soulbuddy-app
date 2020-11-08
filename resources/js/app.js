@@ -20,6 +20,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import infiniteScroll from 'vue-infinite-scroll'
+import Toasted from 'vue-toasted';
 /*import './custom.scss'*/
 
 import { LayoutPlugin } from 'bootstrap-vue'
@@ -51,6 +52,7 @@ Vue.use(FormPlugin);
 Vue.use(BootstrapVueIcons);
 Vue.use(LayoutPlugin);
 Vue.use(VueChatScroll);
+Vue.use(Toasted, {duration: 50000, position: "bottom-right", theme: 'outline', className: 'toasted-theme'});
 
 // Material Design
 Vue.use(VueMdc);

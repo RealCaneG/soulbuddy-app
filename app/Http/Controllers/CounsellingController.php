@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\CounsellingHelperRating;
 use App\CounsellingRequest;
-use App\User;
+use App\CounsellingRequestRatingRecord;
 use App\UserBalance;
 use App\UserCounsellingRecord;
 use Auth;
-use http\Env\Response;
-use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
+use mysql_xdevapi\Exception;
 
 class CounsellingController extends Controller
 {
@@ -23,9 +23,16 @@ class CounsellingController extends Controller
             'data' => CounsellingRequest::with('category')->with('owner')->orderBy('expiry_date')->paginate($request->numberOfItems)]);
     }
 
+    public function getAppliedCounsellingRequestRecord()
+    {
+        return response()->json(['error => false',
+        'data' => UserCounsellingRecord::where('applied_user_id', '=', Auth::id())->get()]);
+    }
+
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \PHPUnit\Exception
      */
     public function createCounsellingRequest(Request $request)
     {
@@ -63,18 +70,22 @@ class CounsellingController extends Controller
     public function acceptCasualCounsellingRequest(Request $request)
     {
         $requestUserId = Auth::id();
-        $counsellingRequestId = $request->requestId;
-        $userCounsellingRecord = new UserCounsellingRecord();
-        $userCounsellingRecord->appliedUserId = $requestUserId;
-        $userCounsellingRecord->counsellingRequestId = $counsellingRequestId;
         \DB::beginTransaction();
-        $userCounsellingRecord->save();
+        try {
+            UserCounsellingRecord::create([
+                'applied_user_id' => $requestUserId,
+                'counselling_request_id' => $request->requestId
+            ]);
+        } catch (Exception $exception) {
+            \DB::rollBack();
+            throw $exception;
+        }
         \DB::commit();
 
         return \response()->json(['error' => false, 'message' => 'Request submitted']);
     }
 
-    public function amendCasualCounsellingRequest(Request $request)
+    public function approveCasualCounsellingRequest(Request $request)
     {
         $action = $request->action;
         $counsellingRequestId = $request->counsellingRequestId;
@@ -88,6 +99,37 @@ class CounsellingController extends Controller
         $userCounsellingRecord->save();
         \DB::commit();
 
+        return \response()->json(['error' => false, 'message' => 'The request has been successfully amended']);
+    }
+
+    public function dismissCounsellingSection(Request $request)
+    {
+        $userId = Auth::id();
+        $data = \GuzzleHttp\json_decode($request->data, true);
+        $requestId = $data['request_id'];
+        $rating = $data['rating'];
+        $helperUserId = $data['helper_id'];
+
+        $helperRating = CounsellingHelperRating::whereKey($helperUserId);
+        $helperRatingScore = $helperRating->score;
+        $count = CounsellingRequestRatingRecord::where('helper_id', '=', $helperUserId)->count();
+        $count = $count == 0 ? 1 : $count; // first time to be rated
+        $newScore = ($helperRatingScore + $rating) / $count;
+
+        \DB::beginTransaction();
+        try {
+            CounsellingRequestRatingRecord::create([
+                'helper_id' => $helperUserId,
+                'client_id' => $userId,
+                'rating' => $rating
+            ]);
+            $helperRating->rating = $newScore;
+            $helperRating->save();
+        } catch (\PHPUnit\Exception $exception) {
+            \DB::rollBack();
+            throw $exception;
+        }
+        \DB::commit();
         return \response()->json(['error' => false, 'message' => 'The request has been successfully amended']);
     }
 
@@ -107,6 +149,5 @@ class CounsellingController extends Controller
         }
         \DB::commit();
         return true;
-
     }
 }

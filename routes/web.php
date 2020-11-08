@@ -68,6 +68,8 @@ Route::group(['middleware' => 'auth', 'prefix'=> 'counselling'], function () {
     Route::get('get_categories', 'CounsellingController@getAllCategories');
     Route::get('get_paginated_request', 'CounsellingController@getPaginatedCounsellingRequest');
     Route::post('create_counselling_request', 'CounsellingController@createCounsellingRequest');
+    Route::post('accept_request', 'CounsellingController@acceptCasualCounsellingRequest');
+    Route::post('approve_request', 'CounsellingController@approveCasualCounsellingRequest');
 });
 
 Route::get('{any}', function () {

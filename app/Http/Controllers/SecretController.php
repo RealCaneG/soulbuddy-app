@@ -3,17 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Secret;
-use App\SecretImage;
 use App\TransactionStatus;
 use App\TransactionType;
-use App\User;
 use App\UserBalance;
 use App\UserTransaction;
 use App\UserUnlockSecret;
-use http\Exception\InvalidArgumentException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -80,7 +76,7 @@ class SecretController extends Controller
     /**
      * @param int $userId
      * @param int $secretId
-     * @return UserUnlockSecret|\Illuminate\Database\Eloquent\Model|null
+     * @return array
      * @throws \Exception
      */
     private function unlockSecretService(int $userId, int $secretId)
@@ -97,8 +93,8 @@ class SecretController extends Controller
             throw $exception;
         }
         if ($secret == null) throw new NotFoundHttpException('Unable to find secret by secret Id:' . $secretId);
-        if (!$secretPrice <= $buyerBalance->balance) {
-            throw new BadRequestException('Not enough balance for purchase');
+        if ($secretPrice >= $buyerBalance->balance) {
+            throw new BadRequestException('Not enough balance for purchase. ' . 'Your balance: ' . $buyerBalance->balance);
         }
         try {
             \DB::beginTransaction();
@@ -136,7 +132,7 @@ class SecretController extends Controller
                 ['user_id' => $userId, 'secret_id' => $secretId,]);
             error_log('secret = ' . $secret);
             \DB::commit();
-            return $secret;
+            return [$secret, $buyerBalance];
         } catch (\Exception $e) {
             \DB::rollBack();
             throw new \Exception('Transaction is not completed, rolling back..' . $e);

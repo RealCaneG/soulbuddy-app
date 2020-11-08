@@ -56,6 +56,11 @@ use Laravel\Passport\HasApiTokens;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Message[] $messagesSent
  * @property-read int|null $messages_sent_count
  * @property-read \App\UserBalance|null $userBalance
+ * @property int $user_type
+ * @property-read \App\CounsellingHelperRating|null $rating
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\CounsellingRequestRatingRecord[] $ratingRecords
+ * @property-read int|null $rating_records_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereUserType($value)
  */
 class User extends Authenticatable
 {
@@ -87,6 +92,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function rating()
+    {
+        return $this->hasOne('App\CounsellingHelperRating');
+    }
 
     public function articles()
     {
@@ -129,5 +139,9 @@ class User extends Authenticatable
 
     public function messagesReceived() {
         return $this->hasMany('App\Message', 'to_user_id');
+    }
+
+    public function ratingRecords() {
+        return $this->hasMany('App\CounsellingRequestRatingRecord', 'helper_id');
     }
 }

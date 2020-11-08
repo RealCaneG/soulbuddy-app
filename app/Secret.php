@@ -39,6 +39,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read int|null $ratings_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\UserUnlockSecret[] $userUnlockSecret
  * @property-read int|null $user_unlock_secret_count
+ * @property string $expiry_date
+ * @property-read \App\Category $category
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Secret whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Secret whereExpiryDate($value)
  */
 class Secret extends Model
 {
