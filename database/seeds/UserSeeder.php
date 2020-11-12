@@ -12,9 +12,8 @@ class UserSeeder extends Seeder
     public function run()
     {
         factory(\App\User::class, 100)->create()->each(function ($user) {
-            $userBalance = factory(\App\UserBalance::class)->make();
-            $rating = factory(\App\CounsellingHelperRating::class)->make();
-            $user->userBalance()->save($userBalance);
+            $user->userBalance()->save(factory(\App\UserBalance::class)->make());
+            $user->rating()->save(factory(\App\CounsellingHelperRating::class)->make());
         });
     }
 }

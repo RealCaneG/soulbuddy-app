@@ -27,8 +27,20 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Notification whereNotificationTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Notification whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Notification whereUpdatedAt($value)
+ * @property int $user_id
+ * @property-read \App\User $owner
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Notification whereUserId($value)
+ * @property int $from_user_id
+ * @property int $payload_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Notification whereFromUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Notification wherePayloadId($value)
  */
 class Notification extends Model
 {
-    protected $fillable = ['title', 'description', 'notification_type_id', 'is_read', 'is_deleted'];
+    protected $fillable = ['title', 'user_id', 'description', 'notification_type_id', 'is_read', 'is_deleted', 'from_user_id', 'payload_id'];
+
+    public function owner()
+    {
+        return $this->belongsTo('App\User', 'user_id', 'id');
+    }
 }

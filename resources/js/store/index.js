@@ -7,16 +7,17 @@ const debug = process.env.NODE_ENV !== 'production';
 
 export default new Vuex.Store({
     state: {
-        user: null,
-        isLoading: false,
         currentUser: null,
+        isLoading: false,
+        currentTypingUser: null,
         activeUsers: [],
+        approvedUsers: [],
         userId: null,
         articles: [],
         secrets: [],
         userUnlockedSecrets: [],
         counsellingRequests: [],
-        messages: [],
+        messages: null,
         notifications: [],
         usersWithPreviousConversation: [],
         categories: [{text: 'Choose', value: null}],
@@ -26,13 +27,24 @@ export default new Vuex.Store({
         setAuthUser({commit}, userId) {
             return commit('setAuthUser', userId)
         },
-
         async getCategories({commit}) {
             return commit('setCategories', await axios.get('/counselling/get_categories'))
         },
 
         async getUserUnlockedSecrets({commit}) {
             return commit('setUserUnlockSecret', await axios.get('/secret/get_user_unlocked_secrets'))
+        },
+
+        async getUserContactList({commit}) {
+            return commit('SET_APPROVED_USER_LIST', await axios.get('/messages/get_approved_users'))
+        },
+
+        async updateApprovedUserList({commit}, userId) {
+            return commit('updateApprovedUserList', await axios.get('/counselling/'))
+        },
+
+        setCurrentTypingUser({commit}, user) {
+            return commit('setCurrentTypingUser', user)
         },
 
         setCurrentUser({commit}, user) {
@@ -48,17 +60,24 @@ export default new Vuex.Store({
         },
 
         updateMessages({commit}, message) {
-            return commit('updateMessages', message)
+            return commit('UPDATE_MESSAGES', message)
         },
 
+        updateNotificationState({commit}, notification) {
+            return commit('UPDATE_NOTIFICATION_STATE', notification)
+        },
         async updateNotificationStatus({commit}, payload) {
-            return commit('updateNotificationStatus', payload)
+            return commit('UPDATE_NOTIFICATION_STATUS', await axios.post('/notification/update_notification_status', payload,
+                {
+                    headers: {"Content-Type": "multipart/form-data"}
+                }))
         },
-
-        async updateNotification({commit}, payload) {
-            return commit('updateNotifications', payload)
+        async dismissNotification({commit}, payload) {
+            return commit('DISMISS_NOTIFICATION_BY_ID', await axios.post('/notification/update_notification_status', payload,
+                {
+                    headers: {"Content-Type": "multipart/form-data"}
+                }))
         },
-
         async getAllArticles({commit}) {
             return commit('setArticles', await axios.get('/article/get_all'))
         },
@@ -80,18 +99,25 @@ export default new Vuex.Store({
         async refreshCounsellingRequest({commit}, page) {
             return commit('refreshCounsellingRequest', await axios.get('/counselling/get_paginated_request?page=' + page))
         },
-        async getAllMessages({commit}, userId) {
-            return commit('setMessages', await axios.get('/messages/get_with_user_id', {
-                    params: {user_id: userId}
-                }
-            ))
+        async getAllMessages({commit}) {
+            return commit('setMessages', await axios.get('/messages/get_with_user_id'))
         },
-        async getAllNotifications({commit}) {
-            return commit('setNotifications', await axios.get('/notifications/get_all'))
-        }
+        async getAllUnreadNotifications({commit}) {
+            return commit('setNotifications', await axios.get('/notification/get_all'))
+        },
     },
 
     mutations: {
+        DISMISS_NOTIFICATION_BY_ID(state, response) {
+            if (response.data.error === true) return;
+            let notification = response.data.data;
+            state.notifications.forEach((n, index) => {
+                if (n.id === notification.id) {
+                    state.notifications.splice(index, 1);
+                }
+            })
+        },
+
         updateActiveUsers(state, payload) {
             if (payload.users !== undefined) {
                 state.activeUsers = payload.users
@@ -102,8 +128,11 @@ export default new Vuex.Store({
             }
         },
 
-        updateMessages(state, message) {
+        UPDATE_MESSAGES(state, message) {
             console.log('msg = ', message);
+            console.log('state user id', state.userId)
+            console.log(JSON.stringify(state.messages))
+            console.log(state.messages)
             if (state.userId === message.user_id) {
                 if (state.messages[message.to_user_id])
                     state.messages[message.to_user_id].push(message);
@@ -124,37 +153,22 @@ export default new Vuex.Store({
                 }
             }
         },
-
-        // UPDATE THIS in Controller Method instead
-        updateNotifications(state, payload) {
-            //console.log('New notification = ', notification);
-            let action = payload.action;
-            let notification = payload.notification;
-            switch (action) {
-                case 'ADD' : {
-                    state.notifications = [...state.notifications, notification];
-                    break;
-                }
-                case 'DELETED': {
-                    let theNotification;
-                    state.notifications.forEach(n, index => {
-                        if (n.id === notification.id) {
-                            n.status = 'Read';
-                            state.notifications.splice(index, 1);
-                            theNotification = n;
-                        }
-                    })
-                    break;
-                }
-                default:
-                    break;
-            }
+        UPDATE_NOTIFICATION_STATE(state, notification) { // remove notification from list
+            if (state.notifications.find(n => n.id === notification.id)) return;
+            state.notifications = [...state.notifications, notification];
         },
-        updateNotificationStatus(state, payload) {
-            let status = payload.status;
-            let notificationId = payload.notification.id;
-            let objectToChange = state.notifications.find(notification => notification.id === notificationId);
-            if (objectToChange) objectToChange.status = status;
+        UPDATE_NOTIFICATION_STATUS(state, response) { // remove notification from list
+            console.log({response})
+            if (response.data.error === true) return;
+            let notification = response.data.data;
+            let isRead = notification.is_read === '1';
+            console.log({isRead});
+            if (!isRead) return;
+            state.notifications.forEach((n, index) => {
+                if (n.id === notification.id) {
+                    state.notifications.splice(index, 1);
+                }
+            })
         },
         updateUserUnlockedSecrets(state, secretId) {
             if (state.userUnlockedSecrets.find(s => s === secretId)) return;
@@ -190,31 +204,42 @@ export default new Vuex.Store({
             state.counsellingRequests = response.data.data.data;
         },
         setMessages(state, response) {
-            console.log('state messages = ', response.data.data);
-            if (response.data.data) {
-                state.messages = response.data.data;
+            let fetchedMessages = response.data.data;
+            console.log('fetched messages = ', fetchedMessages);
+            if (fetchedMessages) {
+                state.messages = fetchedMessages;
+                console.log('fetched messages = ');
+                console.log(state.messages);
             }
-            let users = [];
-            Object.keys(state.messages).forEach(function (key) {
-                users[key] = state.messages[key][0].user.id === key ?
-                    state.messages[key][0].user.name : state.messages[key][0].to_user.name;
+/*            let users = [];
+            Object.keys(state.messages).forEach((key) => {
+                users[key] = state.messages[key][0].owner.id === key ?
+                    state.messages[key][0].owner.name : state.messages[key][0].to_user.name;
             })
-            state.usersWithPreviousConversation.push(users);
+            state.usersWithPreviousConversation.push(users);*/
+        },
+        SET_APPROVED_USER_LIST(state, response) {
+            if (response.data.data) {
+                state.approvedUsers = response.data.data;
+            }
         },
         setAuthUser(state, userId) {
             state.userId = userId;
+        },
+        setCurrentTypingUser(state, user) {
+            state.currentTypingUser = user;
         },
         setCurrentUser(state, user) {
             state.currentUser = user;
         },
         setNotifications(state, response) {
+            console.log(`response from get all notification ${JSON.stringify(response)}`)
+            console.log({response})
             state.notifications = response.data.data;
         },
         setUserUnlockSecret(state, response) {
             let userUnlockedSecretIds = [];
             response.data.data.map(d => {
-                console.log('in the loop!')
-                console.log({d})
                 userUnlockedSecretIds.push(d.secret_id)
             });
             console.log(`finished looping ${userUnlockedSecretIds}`)
@@ -242,6 +267,10 @@ export default new Vuex.Store({
 
         getCurrentUser(state) {
             return state.currentUser;
+        },
+
+        getCurrentTypingUser(state) {
+            return state.currentTypingUser;
         },
 
         getMessages(state) {

@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\ApprovedUserChatContactRecord;
 use App\Category;
 use App\CounsellingHelperRating;
 use App\CounsellingRequest;
 use App\CounsellingRequestRatingRecord;
+use App\Events\AcceptRequestEvent;
+use App\Events\MessageEvent;
+use App\Message;
+use App\Notification;
+use App\User;
 use App\UserBalance;
 use App\UserCounsellingRecord;
 use Auth;
@@ -26,7 +32,7 @@ class CounsellingController extends Controller
     public function getAppliedCounsellingRequestRecord()
     {
         return response()->json(['error => false',
-        'data' => UserCounsellingRecord::where('applied_user_id', '=', Auth::id())->get()]);
+            'data' => UserCounsellingRecord::where('applied_user_id', '=', Auth::id())->get()]);
     }
 
     /**
@@ -70,34 +76,85 @@ class CounsellingController extends Controller
     public function acceptCasualCounsellingRequest(Request $request)
     {
         $requestUserId = Auth::id();
+        $clientUserId = $request->client_id;
+        $notification = null;
+
         \DB::beginTransaction();
         try {
+            $counsellingRequestId = $request->request_id;
+            error_log('counselling request id '. $counsellingRequestId . 'client user id'. $clientUserId);
+            $existingRecord = UserCounsellingRecord::where('applied_user_id', $requestUserId)
+                ->where('counselling_request_id', $counsellingRequestId)->get();
+            if ($existingRecord->isNotEmpty()) return \response()->json(['error' => true, 'message' => 'Duplicated record!']);
+
             UserCounsellingRecord::create([
                 'applied_user_id' => $requestUserId,
-                'counselling_request_id' => $request->requestId
+                'counselling_request_id' => $counsellingRequestId
             ]);
+
+            $notification = Notification::create([
+                'title' => 'Counselling Request Accepted',
+                'user_id' => $clientUserId,
+                'from_user_id' => $requestUserId,
+                'description' => Auth::user()->name . ' accepted your request!',
+                'notification_type_id' => 1,
+                'payload_id' => $counsellingRequestId
+            ]);
+            \DB::commit();
         } catch (Exception $exception) {
             \DB::rollBack();
             throw $exception;
         }
-        \DB::commit();
+
+
+        broadcast(new AcceptRequestEvent($notification->load('owner')));
 
         return \response()->json(['error' => false, 'message' => 'Request submitted']);
     }
 
     public function approveCasualCounsellingRequest(Request $request)
     {
-        $action = $request->action;
-        $counsellingRequestId = $request->counsellingRequestId;
-        $userCounsellingRecord = UserCounsellingRecord::whereKey($counsellingRequestId)->first();
-        if ($userCounsellingRecord === null) {
+        $isApproved = $request->is_approved;
+        $counsellingRequestId = $request->request_id;
+        $userIdToBeApproved = $request->user_id_to_approve;
+        error_log($counsellingRequestId . ' + ' . $userIdToBeApproved);
+        error_log('isApproved' . ' + ' . $isApproved);
+        $userCounsellingRecord = UserCounsellingRecord::whereCounsellingRequestId($counsellingRequestId)->first();
+        if ($userCounsellingRecord->doesntExist()) {
             return response()->json(['error' => true, 'message' => 'Unable to find the record with Id: ' . $counsellingRequestId]);
         }
-        $action . equalToIgnoringCase('ACCEPT') ?
-            $userCounsellingRecord->status = 'ACCEPTED' : $userCounsellingRecord->status = 'REJECTED';
         \DB::beginTransaction();
-        $userCounsellingRecord->save();
-        \DB::commit();
+        try {
+            if ($isApproved) {
+                $userCounsellingRecord->fill(['status' => 'ACCEPTED'])->save();
+                ApprovedUserChatContactRecord::firstOrCreate([
+                    'user_id' => Auth::id(),
+                    'contact_user_id' => $userIdToBeApproved,
+                ]);
+
+                ApprovedUserChatContactRecord::firstOrCreate([
+                    'user_id' => $userIdToBeApproved,
+                    'contact_user_id' => Auth::id(),
+                ]);
+
+                $notification = Notification::create([
+                    'title' => 'Counselling Request Approved',
+                    'user_id' => $userIdToBeApproved,
+                    'from_user_id' => Auth::id(),
+                    'description' => Auth::user()->name . ' approved your request!',
+                    'notification_type_id' => 2
+                ]);
+            } else {
+                $userCounsellingRecord->fill(['status' => 'REJECTED'])->save();
+            }
+            error_log($userCounsellingRecord->get());
+            \DB::commit();
+        }catch (\Exception $exception) {
+            \DB::rollBack();
+            return \response()->json(['error' => true, 'message' => $exception->getMessage()]);
+        }
+
+        broadcast(new AcceptRequestEvent($notification->load('owner')));
 
         return \response()->json(['error' => false, 'message' => 'The request has been successfully amended']);
     }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCounsellingHelperRatingTable extends Migration
+class CreateApprovedUserChatContactRecordsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateCounsellingHelperRatingTable extends Migration
      */
     public function up()
     {
-        Schema::create('counselling_helper_ratings', function (Blueprint $table) {
+        Schema::create('approved_user_chat_contact_records', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id');
-            $table->double('rating');
+            $table->bigInteger('user_id');
+            $table->bigInteger('contact_user_id');
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateCounsellingHelperRatingTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('counselling_helper_rating');
+        Schema::dropIfExists('approved_user_chat_contact_records');
     }
 }

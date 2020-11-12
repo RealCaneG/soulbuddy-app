@@ -13,7 +13,7 @@ class CreateCounsellingRequestRatingRecordTable extends Migration
      */
     public function up()
     {
-        Schema::create('counselling_request_rating_record', function (Blueprint $table) {
+        Schema::create('counselling_request_rating_records', function (Blueprint $table) {
             $table->id();
             $table->string('helper_id');
             $table->string('client_id');

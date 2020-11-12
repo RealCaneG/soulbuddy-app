@@ -1,6 +1,5 @@
 <template>
     <div class="main" @click="$emit('viewArticle')">
-
         <img v-if="article.article_images[0] != null" :src="article.article_images[0].article_image_path"
              class="article-img" alt="/images/logo.png">
         <img v-else src="/images/no_img.jpg" class="article-img-secondary" alt="">

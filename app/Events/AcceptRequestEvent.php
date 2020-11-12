@@ -2,15 +2,14 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
+use App\Notification;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class AcceptRequestEvent
+class AcceptRequestEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -19,9 +18,11 @@ class AcceptRequestEvent
      *
      * @return void
      */
-    public function __construct()
+
+    public $notification;
+    public function __construct(Notification $notification)
     {
-        //
+        $this->notification = $notification;
     }
 
     /**
@@ -31,6 +32,11 @@ class AcceptRequestEvent
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new PresenceChannel('notification');
+    }
+
+    public function broadcastAs() {
+        error_log('broadcastAs '.'notification-'.$this->notification->user_id);
+        return 'notification-'.$this->notification->user_id;
     }
 }
