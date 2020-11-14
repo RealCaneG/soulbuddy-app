@@ -8,7 +8,6 @@
                 <slot name="bannerDescription"></slot>
             </div>
         </div>
-
         <div class="tools">
             <slot name="tools"></slot>
         </div>

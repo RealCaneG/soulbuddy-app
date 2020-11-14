@@ -20,9 +20,9 @@
                             Chat
                         </button>
                     </div>
-                    <b-modal id="modal-1" title="BootstrapVue" :visible.sync="confirmBoxVisible">
+<!--                    <b-modal id="modal-1" title="BootstrapVue" :visible.sync="confirmBoxVisible">
                         <p class="my-4">Hello from modal!</p>
-                    </b-modal>
+                    </b-modal>-->
                 </div>
                 <div class="footer">
                     <div class="info-container">
@@ -30,7 +30,7 @@
                             <avatar v-bind:username="request.owner.name"></avatar>
                             <div class="infos">
                                 <div class="name"> by {{ request.owner.name }}</div>
-                                <div>posted on {{ dateFormat(request.expiry_date) }}</div>
+                                <div>expire on {{ dateFormat(request.expiry_date) }}</div>
                             </div>
                         </div>
                     </div>

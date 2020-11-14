@@ -66,7 +66,7 @@
             },
             handleSecret(secretId) {
                 console.log(`unlocked secrets id: ${this.userUnlockedSecrets}`)
-                if (this.userUnlockedSecrets.includes(secretId)) {
+                if (this.userUnlockedSecrets.includes(secretId)) {l
                     this.viewSecret(secretId)
                     return;
                 }

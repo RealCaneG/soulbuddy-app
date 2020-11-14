@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PaymentEvent;
+use App\Notification;
 use App\Pricing;
 use App\TransactionStatus;
 use App\TransactionType;
 use App\UserBalance;
 use App\UserTransaction;
 use Auth;
-use Carbon\Carbon;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -24,7 +25,6 @@ use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Exception\PayPalConnectionException;
 use PayPal\Exception\PPConnectionException;
 use PayPal\Rest\ApiContext;
-use PHPUnit\Exception;
 
 class PaymentController extends Controller
 {
@@ -51,44 +51,72 @@ class PaymentController extends Controller
 
     public function captureTransaction(Request $request)
     {
-        $userId = Auth::user()->id;
-
-        $transactionType = TransactionType::firstOrCreate(['type' => $request->transaction_type]);
-        $transactionStatus = TransactionStatus::firstOrCreate(['status' => $request->status]);
-
-        $userTransaction = UserTransaction::create([
-            'to_user_id' => $userId,
-            'payment_id' => $request->payment_id,
-            'payer_id' => $request->payer_id,
-            'merchant_id' => $request->merchant_id,
-            'payer_email' => $request->payer_email,
-            'payee_email' => $request->payee_email,
-            'transaction_type' => $transactionType->id,
-            'country_code' => $request->country_code,
-            'amount' => $request->amount,
-            'ccy' => $request->ccy,
-            'given_name' => $request->given_name,
-            'surname' => $request->surname,
-            'intent' => $request->intent,
-            'payment_method' => $request->payment_method,
-            'status' => $transactionStatus->id,
-            'reference_id' => $request->reference_id,
-        ]);
-
         if (strcasecmp($request->status, 'COMPLETED') == 0) {
+
+            return response()->json(
+                ['error' => true,
+                    'message' => 'Transaction is not completed',
+                    'status' => $request->status]);
+        }
+
+        $notification = null;
+        $userId = Auth::user()->id;
+        \DB::beginTransaction();
+        try {
             if ($this->topUpTokens($request->amount, Auth::user()->id)) {
+                $message = 'Transaction successfully captured! Top Up token successfully!';
+                $transactionStatus = TransactionStatus::firstOrCreate(['status' => $request->status]);
+                $transactionType = TransactionType::firstOrCreate(['type' => $request->transaction_type]);
+                $userTransaction = UserTransaction::create([
+                    'to_user_id' => $userId,
+                    'payment_id' => $request->payment_id,
+                    'payer_id' => $request->payer_id,
+                    'merchant_id' => $request->merchant_id,
+                    'payer_email' => $request->payer_email,
+                    'payee_email' => $request->payee_email,
+                    'transaction_type' => $transactionType->id,
+                    'country_code' => $request->country_code,
+                    'amount' => $request->amount,
+                    'ccy' => $request->ccy,
+                    'given_name' => $request->given_name,
+                    'surname' => $request->surname,
+                    'intent' => $request->intent,
+                    'payment_method' => $request->payment_method,
+                    'status' => $transactionStatus->id,
+                    'reference_id' => $request->reference_id,
+                ]);
+                $notification = Notification::create([
+                    'title' => 'Counselling Request Approved',
+                    'user_id' => $userId,
+                    'description' => $message,
+                    'notification_type_id' => 2
+                ]);
+                \DB::commit();
+                broadcast(new PaymentEvent($notification));
                 return response()->json(
                     ['error' => false,
-                        'message' => 'Transaction successfully captured! Top Up token successfully!',
+                        'message' => $message,
                         'data' => $userTransaction]);
             } else {
+                $message = 'Unable to top up token, please contact our customer service.';
+                $notification = Notification::create([
+                    'title' => 'Counselling Request Approved',
+                    'user_id' => $userId,
+                    'description' => $message,
+                    'notification_type_id' => 2
+                ]);
+                \DB::commit();
+                broadcast(new PaymentEvent($notification));
                 return response()->json(
-                    ['error' => true,
-                        'message' => 'Unable to top up token, please contact our customer service.']);
+                    ['error' => true, 'message' => $message]);
             }
-
+        } catch (\Throwable $exception) {
+            error_log($exception);
+            \DB::rollBack();
+            return response()->json(
+                ['error' => true,
+                    'message' => $exception->getMessage()]);
         }
-        return response()->json(['error' => false, 'message' => 'Transaction successfully captured!', 'data' => $userTransaction]);
     }
 
     private function topUpTokens(int $amount, string $userId)
@@ -103,11 +131,11 @@ class PaymentController extends Controller
                 $balance = $userBalance->balance;
                 $userBalance->balance = $balance + $pricing->token;
                 $userBalance->save();
-            } catch (\Exception $exception) {
+                \DB::commit();
+            } catch (\Throwable $exception) {
                 \DB::rollBack();
                 throw $exception;
             }
-            \DB::commit();
             return true;
         }
         return false;
