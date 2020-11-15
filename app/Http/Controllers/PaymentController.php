@@ -62,7 +62,7 @@ class PaymentController extends Controller
         $userId = Auth::user()->id;
         \DB::beginTransaction();
         try {
-            if ($this->topUpTokens($request->amount, Auth::user()->id)) {
+            if ($this->topUpTokens(100, Auth::user()->id)) {
                 $message = 'Transaction successfully captured! Top Up token successfully!';
                 $transactionStatus = TransactionStatus::firstOrCreate(['status' => $request->status]);
                 $transactionType = TransactionType::firstOrCreate(['type' => $request->transaction_type]);
@@ -120,15 +120,15 @@ class PaymentController extends Controller
 
     private function topUpTokens(int $amount, string $userId)
     {
-        $pricing = Pricing::wherePrice($amount)->first();
         $userBalance = UserBalance::whereUserId($userId)->first();
 
         \DB::beginTransaction();
+        error_log('amount' . $amount);
 
-        if ($pricing && $userBalance) {
+        if ($userBalance) {
             try {
                 $balance = $userBalance->balance;
-                $userBalance->balance = $balance + $pricing->token;
+                $userBalance->balance = $balance + $amount;
                 $userBalance->save();
                 \DB::commit();
             } catch (\Throwable $exception) {
