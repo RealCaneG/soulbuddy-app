@@ -1,5 +1,6 @@
 <template>
-    <modal name="confirmation-box">
+    <modal name="confirmation-box" :height="'auto'"
+           :styles="'justify-content: space-between; display: flex;flex-direction: column;padding: 1rem 1rem;border-radius: 25px;'">
         <header class="header">
             <slot name="header">
                 Confirm?
@@ -15,34 +16,43 @@
 </template>
 
 <script>
-export default {
-    name: "ConfirmationBox"
-}
+    export default {
+        name: "ConfirmationBox"
+    }
 </script>
 
 <style scoped>
+    .modal-confirm {
+        justify-content: space-between;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem 1rem;
+        border-radius: 25px;
+    }
 
-.header {
-    font-size: 3rem;
-    font-family: 'Arvo-Bold', Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    color: #d84315;
-}
+    .header {
+        font-size: 2rem;
+        font-family: 'Arvo-Bold', Arial, Helvetica, sans-serif;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: #F63854;
+    }
 
-.description {
-    font-size: 1rem;
-    font-family: 'Arvo-Bold', Arial, Helvetica, sans-serif;
-    font-weight: 300;
-    color: #495057;
-}
+    .description {
+        font-size: 1rem;
+        font-family: 'Arvo-Bold', Arial, Helvetica, sans-serif;
+        font-weight: 300;
+        margin-bottom: 1rem;
+        color: #495057;
+    }
 
-.buttons {
-    display: flex;
-    flex-direction: row;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-}
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
 
 
 </style>

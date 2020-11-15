@@ -51,8 +51,7 @@ class PaymentController extends Controller
 
     public function captureTransaction(Request $request)
     {
-        if (strcasecmp($request->status, 'COMPLETED') == 0) {
-
+        if (strcasecmp($request->status, 'COMPLETED') != 0) {
             return response()->json(
                 ['error' => true,
                     'message' => 'Transaction is not completed',
