@@ -11,6 +11,10 @@ class PricingSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Pricing::class, 3)->create();
+        DB::table('pricings')->insert([
+            'token' => 1000,
+            'price' => 100,
+            'ccy' => 'HKD',
+        ]);
     }
 }

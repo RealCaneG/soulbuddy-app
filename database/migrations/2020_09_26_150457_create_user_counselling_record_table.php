@@ -13,7 +13,7 @@ class CreateUserCounsellingRecordTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_counselling_record', function (Blueprint $table) {
+        Schema::create('user_counselling_records', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('applied_user_id');
             $table->unsignedBigInteger('counselling_request_id');

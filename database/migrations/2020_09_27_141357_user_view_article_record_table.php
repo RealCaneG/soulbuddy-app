@@ -13,7 +13,7 @@ class UserViewArticleRecordTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_view_article_record', function (Blueprint $table){
+        Schema::create('user_view_article_records', function (Blueprint $table){
             $table->id();
             $table->integer('article_id');
             $table->integer('user_id');

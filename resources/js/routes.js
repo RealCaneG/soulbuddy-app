@@ -7,6 +7,7 @@ import CreateSecret from "./components/CreateSecret";
 import Secret from "./pages/Secret";
 import Pricing from "./pages/Pricing";
 import Logout from "./pages/Logout";
+import Notification from "./pages/Notification";
 
 export const routes = [
     { path: '/logout', component: Logout, name: 'Logout'},
@@ -18,5 +19,6 @@ export const routes = [
     { path: '/home/top_up', component: Pricing, name: 'Pricing'},
     { path: '/home/message', component: ChatComponent, name: 'Message'},
     { path: '/home/counselling', component: Counselling, name:'Counselling'},
+    { path: '/home/notification', component: Notification, name:'AllNotification'},
     { path: '/home/counselling/new', component: CreateCounsellingRequest, name:'CreateCounsellingRequest'}
 ];

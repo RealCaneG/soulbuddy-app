@@ -37,6 +37,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereUserId($value)
  * @mixin \Eloquent
+ * @property int $category_id
+ * @property-read \App\Category $category
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereCategoryId($value)
  */
 class Article extends Model
 {

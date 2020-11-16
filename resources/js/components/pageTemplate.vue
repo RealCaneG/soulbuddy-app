@@ -8,7 +8,6 @@
                 <slot name="bannerDescription"></slot>
             </div>
         </div>
-
         <div class="tools">
             <slot name="tools"></slot>
         </div>
@@ -30,5 +29,10 @@
         align-items: center;
         flex-direction: column;
         justify-content: center;
+    }
+
+    .tools {
+        padding: 0 1rem 0 1rem;
+        height: 15rem;
     }
 </style>

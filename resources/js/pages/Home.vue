@@ -66,6 +66,27 @@
                     </router-link>
                 </li>
                 <li class="nav-item">
+                    <router-link to="/home/message">
+                        <a class="nav-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"
+                                 data-prefix="far" data-icon="comments" class="svg-inline--fa fa-comments fa-w-18"
+                                 role="img" viewBox="0 0 576 512">
+                                <path fill="currentColor"
+                                      d="M532 386.2c27.5-27.1 44-61.1 44-98.2 0-80-76.5-146.1-176.2-157.9C368.3 72.5 294.3 32 208 32 93.1 32 0 103.6 0 192c0 37 16.5 71 44 98.2-15.3 30.7-37.3 54.5-37.7 54.9-6.3 6.7-8.1 16.5-4.4 25 3.6 8.5 12 14 21.2 14 53.5 0 96.7-20.2 125.2-38.8 9.2 2.1 18.7 3.7 28.4 4.9C208.1 407.6 281.8 448 368 448c20.8 0 40.8-2.4 59.8-6.8C456.3 459.7 499.4 480 553 480c9.2 0 17.5-5.5 21.2-14 3.6-8.5 1.9-18.3-4.4-25-.4-.3-22.5-24.1-37.8-54.8zm-392.8-92.3L122.1 305c-14.1 9.1-28.5 16.3-43.1 21.4 2.7-4.7 5.4-9.7 8-14.8l15.5-31.1L77.7 256C64.2 242.6 48 220.7 48 192c0-60.7 73.3-112 160-112s160 51.3 160 112-73.3 112-160 112c-16.5 0-33-1.9-49-5.6l-19.8-4.5zM498.3 352l-24.7 24.4 15.5 31.1c2.6 5.1 5.3 10.1 8 14.8-14.6-5.1-29-12.3-43.1-21.4l-17.1-11.1-19.9 4.6c-16 3.7-32.5 5.6-49 5.6-54 0-102.2-20.1-131.3-49.7C338 339.5 416 272.9 416 192c0-3.4-.4-6.7-.7-10C479.7 196.5 528 238.8 528 288c0 28.7-16.2 50.6-29.7 64z"/>
+                            </svg>
+                            <span class="link-text">Chatroom</span>
+                        </a>
+                    </router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link to="/home/notification">
+                        <a class="nav-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" data-prefix="far" data-icon="bell" class="svg-inline--fa fa-bell fa-w-14" role="img" viewBox="0 0 448 512"><path fill="currentColor" d="M439.39 362.29c-19.32-20.76-55.47-51.99-55.47-154.29 0-77.7-54.48-139.9-127.94-155.16V32c0-17.67-14.32-32-31.98-32s-31.98 14.33-31.98 32v20.84C118.56 68.1 64.08 130.3 64.08 208c0 102.3-36.15 133.53-55.47 154.29-6 6.45-8.66 14.16-8.61 21.71.11 16.4 12.98 32 32.1 32h383.8c19.12 0 32-15.6 32.1-32 .05-7.55-2.61-15.27-8.61-21.71zM67.53 368c21.22-27.97 44.42-74.33 44.53-159.42 0-.2-.06-.38-.06-.58 0-61.86 50.14-112 112-112s112 50.14 112 112c0 .2-.06.38-.06.58.11 85.1 23.31 131.46 44.53 159.42H67.53zM224 512c35.32 0 63.97-28.65 63.97-64H160.03c0 35.35 28.65 64 63.97 64z"/></svg>
+                            <span class="link-text">Notification</span>
+                        </a>
+                    </router-link>
+                </li>
+                <li class="nav-item">
                     <a href="#" class="nav-link" @click="logout()">
                         <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="sign-out-alt"
                              class="svg-inline--fa fa-sign-out-alt fa-w-16" role="img"
@@ -92,257 +113,261 @@
 </template>
 
 <script>
-    import Avatar from "vue-avatar/src/Avatar";
-    import {mapActions} from "vuex";
+import Avatar from "vue-avatar/src/Avatar";
+import {mapActions} from "vuex";
 
-    export default {
-        components: {Avatar},
-        props: ['user'],
-        name: "Home",
-        mounted() {
-            this.$store.dispatch('setAuthUser', this.user.id)
-        },
-        computed: {
-            getActiveUsers() {
-                return this.$store.state.activeUser;
-            }
-        },
-        data() {
-            return {
-                image_src: 'images/logo.png',
-                isDialogWindowOpen: false,
-                isChatroomSelected: false,
-                isNotificationSelected: false,
-                typingTimer: false,
-            }
-        },
-        created() {
-            window.Echo.join('message')
-                .here(users => {
-                    console.log('echo users =', users);
-                    this.$store.dispatch('updateActiveUsers', {users: users});
-                })
-                .joining(user => {
-                    this.$store.dispatch('updateActiveUsers', {user: user, isRemove: false});
-                })
-                .leaving(user => {
-                    this.$store.dispatch('updateActiveUsers', {user: user, isRemove: true});
-                })
-                .listen('.message-' + this.user.id, (event) => {
-                    this.$store.dispatch('updateMessages', event.message);
-                })
-                .listenForWhisper('typing', user => {
-                    this.$store.dispatch('setCurrentUser', user);
-                    if (this.typingTimer) {
-                        clearTimeout(this.typingTimer);
-                    }
-                    this.typingTimer = setTimeout(() => {
-                        this.$store.dispatch('setCurrentUser', false);
-                    }, 1000);
-                })
-
-            window.Echo.join('notification')
-                .joining(user => {
-                    this.$store.dispatch('updateNotification', {user: user, isRemove: false});
-                })
-                .listen('.notification-' + this.user.id, (event) => {
-                    this.$store.dispatch('updateNotification', event.notification);
-                })
-                .listenForWhisper('typing', user => {
-                    this.$store.dispatch('setCurrentUser', user);
-                    if (this.typingTimer) {
-                        clearTimeout(this.typingTimer);
-                    }
-                    this.typingTimer = setTimeout(() => {
-                        this.$store.dispatch('setCurrentUser', false);
-                    }, 1000);
-                })
-        },
-        methods: {
-            ...mapActions(['updateActiveUsers']),
-
-            openDialogWindow(event) {
-                this.isDialogWindowOpen = !this.isDialogWindowOpen;
-                switch (event.currentTarget.id) {
-                    case 'notification' :
-                        this.isNotificationSelected = false;
-                        this.isChatroomSelected = true;
-                        break;
-                    case 'chatroom' :
-                        this.isChatroomSelected = true;
-                        this.isNotificationSelected = false;
-                        break;
-                    default:
-                        this.isChatroomSelected = false;
-                        this.isNotificationSelected = false;
-
+export default {
+    components: {Avatar},
+    props: ['user'],
+    name: "Home",
+    mounted() {
+        console.log(`this user ${JSON.stringify(this.user)}`)
+        this.$store.dispatch('setAuthUser', this.user.id)
+        this.$store.dispatch('setCurrentUser', this.user)
+    },
+    computed: {
+        getActiveUsers() {
+            return this.$store.state.activeUsers;
+        }
+    },
+    data() {
+        return {
+            image_src: 'images/logo.png',
+            isDialogWindowOpen: false,
+            isChatroomSelected: false,
+            isNotificationSelected: false,
+            typingTimer: false,
+        }
+    },
+    created() {
+        window.Echo.join('message')
+            .here(users => {
+                //console.log(`echo active users = ${JSON.stringify(users)}`);
+                this.$store.dispatch('updateActiveUsers', {users: users});
+            })
+            .joining(user => {
+                this.$store.dispatch('updateActiveUsers', {user: user, isRemove: false});
+            })
+            .leaving(user => {
+                this.$store.dispatch('updateActiveUsers', {user: user, isRemove: true});
+            })
+            .listen('.message-' + this.user.id, (event) => {
+                this.$store.dispatch('updateMessages', event.message);
+            })
+            .listenForWhisper('typing', user => {
+                this.$store.dispatch('setCurrentTypingUser', user);
+                if (this.typingTimer) {
+                    clearTimeout(this.typingTimer);
                 }
-                console.log(this.isDialogWindowOpen)
-            },
-            logout() {
-                if (confirm("Are you sure you want to log out?")) {
-                    axios.post('logout').then(response => {
+                this.typingTimer = setTimeout(() => {
+                    this.$store.dispatch('setCurrentTypingUser', false);
+                }, 1000);
+            })
+
+        window.Echo.join('notification')
+            .here(users => console.log('hello from notification'))
+            .joining(user => {
+                console.log('joining notification channel')
+                //this.$store.dispatch('updateNotification', {user: user, isRemove: false});
+            })
+            .listen('.notification-' + this.user.id, (event) => {
+                this.$store.dispatch('updateNotificationState', event.notification);
+                this.$bvToast.toast(event.notification.description, {
+                    title: event.notification.title,
+                    variant: 'info',
+                    autoHideDelay: 5000,
+                    appendToast: true
+                })
+
+            })
+    },
+    methods: {
+        ...mapActions(['updateActiveUsers']),
+
+        openDialogWindow(event) {
+            this.isDialogWindowOpen = !this.isDialogWindowOpen;
+            switch (event.currentTarget.id) {
+                case 'notification' :
+                    this.isNotificationSelected = false;
+                    this.isChatroomSelected = true;
+                    break;
+                case 'chatroom' :
+                    this.isChatroomSelected = true;
+                    this.isNotificationSelected = false;
+                    break;
+                default:
+                    this.isChatroomSelected = false;
+                    this.isNotificationSelected = false;
+
+            }
+            console.log(this.isDialogWindowOpen)
+        },
+        logout() {
+            if (confirm("Are you sure you want to log out?")) {
+                axios.post('logout').then(response => {
+                    localStorage.removeItem('auth_token');
+                    delete axios.defaults.headers.common['Authorization'];
+                    this.$router.push('/logout');
+                })
+                    .catch(error => {
                         localStorage.removeItem('auth_token');
                         delete axios.defaults.headers.common['Authorization'];
                         this.$router.push('/logout');
-                    })
-                        .catch(error => {
-                            localStorage.removeItem('auth_token');
-                            delete axios.defaults.headers.common['Authorization'];
-                            this.$router.push('/logout');
-                        });
-                }
+                    });
             }
-
         }
+
     }
+}
 </script>
 
 <style scoped>
-    a:link {
-        text-decoration: none;
-    }
+a:link {
+    text-decoration: none;
+}
 
-    * {
-        --bg-primary: #fff;
-        --bg-secondary: #6c757d;
-        --text-primary: #333;
-        --text-secondary: #F63854;
-        --transition-speed: 500ms;
-    }
+* {
+    --bg-primary: #fff;
+    --bg-secondary: #d3d8e452;
+    --text-primary: #333;
+    --text-secondary: #e861a2;
+    --transition-speed: 500ms;
+    --theme-color: #F63854;
+}
 
-    .navbar-brand img {
-        width: 15rem;
-        margin-left: 1rem;
-    }
+.navbar-brand img {
+    width: 15rem;
+    margin-left: 1rem;
+}
 
-    .navbar {
-        position: fixed;
-        background-color: var(--bg-primary);
-        transition: width 600ms ease;
-        overflow: scroll;
-        padding: 5px !important;
-        box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 0.06);
-        width: 5rem;
-        height: 100vh;
-        z-index: 99999;
-    }
+.navbar {
+    position: fixed;
+    background-color: var(--bg-primary);
+    transition: width 600ms ease;
+    overflow: scroll;
+    padding: 5px !important;
+    box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 0.06);
+    width: 5rem;
+    height: 100vh;
+    z-index: 99999;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
 
-    .navbar-nav {
-        list-style: none;
-        padding: 0;
-        margin-top: 1rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        height: 100%;
-    }
+.navbar-nav {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
 
-    .nav-item {
-        width: 100%;
-    }
+.nav-item {
+    width: 100%;
+}
 
-    .nav-item:nth-last-child(-n+1) {
-        margin-top: auto;
-    }
+.nav-item:nth-last-child(-n+1) {
+    margin-top: auto;
+}
 
-    .nav-link {
-        display: flex;
-        align-items: center;
-        height: 5rem;
-        color: var(--text-primary);
-        text-decoration: none;
-        filter: grayscale(100%) opacity(0.7) !important;
-        transition: var(--transition-speed);
-    }
+.nav-link {
+    display: flex;
+    align-items: center;
+    height: 5rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    filter: grayscale(100%) opacity(0.7) !important;
+    transition: var(--transition-speed);
+}
 
-    .nav-link:active {
-        filter: grayscale(0%) opacity(1) !important;
-        background: var(--bg-secondary);
-        color: var(--bg-secondary);
-    }
+.nav-link:active {
+    filter: grayscale(0%) opacity(1) !important;
+    background: var(--bg-secondary);
+    color: var(--bg-secondary);
+}
 
-    .nav-link:hover {
-        filter: grayscale(0%) opacity(1) !important;
-        background: var(--bg-secondary);
-        color: var(--text-secondary);
-    }
+.nav-link:hover {
+    filter: grayscale(0%) opacity(1) !important;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+}
 
-    .nav-link .vue-avatar--wrapper {
-        margin: 0 1rem;
-    }
+.nav-link .vue-avatar--wrapper {
+    margin: 0 1rem;
+}
 
-    .link-text {
-        display: none;
-        margin-left: 1rem;
-        min-width: 10rem;
-    }
+.link-text {
+    display: none;
+    margin-left: 1rem;
+    min-width: 10rem;
+}
 
-    .nav-link svg {
-        width: 2rem;
-        min-width: 2rem;
-        margin: 0 1.5rem;
-    }
+.nav-link svg {
+    width: 2rem;
+    min-width: 2rem;
+    margin: 0 1.5rem;
+}
 
-    .main {
-        margin-left: 5rem;
-        padding: 1rem;
-    }
+.main {
+    margin-left: 5rem;
+    padding: 1rem;
+}
 
-    .dialog {
-        width: 300px;
-        height: 500px;
-        position: fixed;
-        top: 70px;
-        right: 50px;
-        border: #F63854;
-    }
+.dialog {
+    width: 300px;
+    height: 500px;
+    position: fixed;
+    top: 70px;
+    right: 50px;
+    border: var(--theme-color);
+}
 
-    .nav-item {
-        /*margin-right: 1%;*/
-    }
+.nav-item {
+    /*margin-right: 1%;*/
+}
 
-    .navbar:hover {
-        width: 18rem;
-        padding-left: 1rem;
-    }
+.navbar:hover {
+    width: 18rem;
+    padding-left: 1rem;
+}
 
-    .navbar:hover .link-text {
-        display: block;
-        margin-left: 1rem;
-        min-width: 10rem;
-    }
+.navbar:hover .link-text {
+    display: block;
+    margin-left: 1rem;
+    min-width: 10rem;
+}
 
-    .navbar:hover .logo svg {
-        margin-left: 11rem;
-    }
+.navbar:hover .logo svg {
+    margin-left: 11rem;
+}
 
-    .navbar:hover .logo-text {
-        left: 0px;
-    }
+.navbar:hover .logo-text {
+    left: 0px;
+}
 
-    .navbar-nav .nav-item .icon .b-icon {
-        color: #F63854;
-        font-size: 25px;
-    }
+.navbar-nav .nav-item .icon .b-icon {
+    color: #F63854;
+    font-size: 25px;
+}
 
-    /*    .navbar-nav .nav-item .vue-avatar--wrapper {
-            width: 45px;
-            height: 45px;
-        }*/
-
-    .navbar-nav .nav-item .icon {
-        text-align: center;
-        border: 1px solid #f2dede;
+/*    .navbar-nav .nav-item .vue-avatar--wrapper {
         width: 45px;
         height: 45px;
-        border-radius: 50%;
-        margin: 0 auto;
-        padding-top: 17%
-    }
+    }*/
 
-    .navbar-nav .nav-item .icon .badge {
-        border-radius: 50%;
-        margin-left: 25px;
-    }
+.navbar-nav .nav-item .icon {
+    text-align: center;
+    border: 1px solid #f2dede;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin: 0 auto;
+    padding-top: 17%
+}
+
+.navbar-nav .nav-item .icon .badge {
+    border-radius: 50%;
+    margin-left: 25px;
+}
 </style>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ApprovedUserChatContactRecord;
 use App\Events\MessageEvent;
 use App\Message;
 use App\User;
@@ -25,27 +26,33 @@ class MessageController extends Controller
         return Message::with('user')->get();
     }
 
-    public function fetchAllWithUserId(Request $request)
+    public function getApprovedUserList()
     {
-        $messages = Message::where('to_user_id', $request->user_id)
-            ->orWhere('user_id', $request->user_id)->with('user', 'toUser')->get();
+        $contactList = ApprovedUserChatContactRecord::where('user_id', '=', \Auth::id())
+            ->where('status', '=', 'active')->with('owner', 'contactUser')->get();
+        return response()->json(['error => false',
+            'data' => $contactList]);
+    }
+
+    public function fetchAllWithUserId()
+    {
+        $userId = \Auth::id();
+        error_log($userId);
+        $messages = Message::where('to_user_id', $userId)
+            ->orWhere('user_id', $userId)->with('user', 'toUser')->get();
 
         foreach ($messages as $msg) {
-            $userId = ($msg->user_id == $request->user_id) ? $msg->to_user_id : $msg->user_id;
+            $userId = ($msg->user_id == $userId) ? $msg->to_user_id : $msg->user_id;
             $msg->key = $userId;
         }
         $messages = $messages->groupBy('key')->sortBy('created_at');
         error_log($messages);
-
-
         return response()->json(['data' => $messages, 'status' => 'success']);
     }
 
     public function sendMessage(Request $request)
     {
         $chat = Message::create(['to_user_id' => $request->user_id, 'user_id' => \Auth::id(), 'message' => $request->message]);
-
-        echo 'created message = ' . $chat->message . $chat->to_user_id;
 
         broadcast(new MessageEvent($chat->load('user')))->toOthers();
 

@@ -39,10 +39,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read int|null $ratings_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\UserUnlockSecret[] $userUnlockSecret
  * @property-read int|null $user_unlock_secret_count
+ * @property string $expiry_date
+ * @property-read \App\Category $category
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Secret whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Secret whereExpiryDate($value)
  */
 class Secret extends Model
 {
-    protected $fillable = ['title', 'body', 'category_id', 'price', 'description', 'is_rated', 'is_free', 'overall_rating', 'user_id'];
+    protected $fillable = ['title', 'body', 'category_id', 'price', 'description', 'is_rated', 'is_free', 'overall_rating', 'user_id', 'expiry_date'];
     public function author() {
         return $this->belongsTo('App\User', 'user_id');
     }

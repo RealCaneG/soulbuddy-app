@@ -29,7 +29,7 @@ class ArticleController extends Controller
         $title = $request->title;
         $body = $request->body;
         $images = $request->images;
-        $categoryId = $request->cetegoryId;
+        $categoryId = $request->categoryId;
 
         $article = Article::create([
             'title' => $title,

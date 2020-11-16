@@ -3,45 +3,57 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-
-import Vuetify from './vuetify'
+//vuex
 import store from './store/index';
+//routes
+import VueRouter from 'vue-router';
+import {routes} from './routes';
+//fontawesome
+import {library} from '@fortawesome/fontawesome-svg-core'
+import {faUserSecret} from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+//element-ui
 import ElementUi from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css'
-import VueScrollactive from 'vue-scrollactive';
-import Avatar from 'vue-avatar';
-import { BootstrapVue, IconsPlugin, BootstrapVueIcons, FormPlugin} from 'bootstrap-vue'
+//bootstrap
+import {LayoutPlugin} from 'bootstrap-vue'
+import {BootstrapVue, IconsPlugin, BootstrapVueIcons, FormPlugin} from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import VueRouter from 'vue-router';
-import { routes } from './routes';
-import VueChatScroll from 'vue-chat-scroll'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+// misc
+import Avatar from 'vue-avatar';
 import infiniteScroll from 'vue-infinite-scroll'
-/*import './custom.scss'*/
-
-import { LayoutPlugin } from 'bootstrap-vue'
 import moment from 'moment';
-import StarRating from 'vue-star-rating';
-import VueMdc from 'vue-mdc';
 import 'vue-mdc/dist/vue-mdc.css';
-//require('./css/custom.css');
+import StarRating from 'vue-star-rating';
+import VueScrollactive from 'vue-scrollactive';
+import VueChatScroll from 'vue-chat-scroll'
+import VModal from 'vue-js-modal'
+// Vuetify
+import Vuetify from 'vuetify'
+import colors from 'vuetify/es5/util/colors'
+import 'vuetify/dist/vuetify.min.css'
+
 require('./bootstrap');
 
 window.Vue = require('vue');
 
 library.add(faUserSecret);
-
 Vue.use(ElementUi);
-
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 Vue.use(VueScrollactive);
-
-Vue.use(infiniteScroll)
-Vue.use(Vuetify);
-
+Vue.use(infiniteScroll);
+Vue.use(VModal, {dialog: true});
+Vue.use(Vuetify, {
+    theme: {
+        light: {
+            primary: colors.purple,
+            secondary: colors.grey.darken1,
+            accent: colors.shades.black,
+            error: colors.red.accent3,
+        }
+    }
+});
 
 // Install BootstrapVue
 Vue.use(BootstrapVue);
@@ -51,9 +63,6 @@ Vue.use(FormPlugin);
 Vue.use(BootstrapVueIcons);
 Vue.use(LayoutPlugin);
 Vue.use(VueChatScroll);
-
-// Material Design
-Vue.use(VueMdc);
 
 /**
  * The following block of code may be used to automatically register your
@@ -66,13 +75,13 @@ Vue.use(VueMdc);
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('profile-component', require('./components/ProfileComponent.vue').default);
 Vue.component('create-article-component', require('./components/CreateArticle.vue').default);
 Vue.component('all-articles-component', require('./components/AllArticles.vue').default);
 Vue.component('article-listing-base', require('./components/ArticleListingBase.vue').default);
 Vue.component('create-secret-component', require('./components/CreateSecret.vue').default);
 Vue.component('all-secrets-component', require('./components/AllSecrets.vue').default);
+Vue.component('notification', require('./pages/Notification.vue').default);
 Vue.component('landing-menu-bar', require('./pages/LandingMenuBar.vue').default);
 Vue.component('landing', require('./pages/Landing.vue').default);
 Vue.component('sidebar', require('./components/Sidebar').default);
@@ -88,13 +97,17 @@ Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.component('all-counselling-request', require('./components/AllCounsellingRequest.vue').default);
 Vue.component('locked-secret', require('./components/lockedSecret').default);
 Vue.component('unlocked-secret', require('./components/unlockedSecret').default);
+Vue.component('info-notification', require('./components/InfoNotification').default);
+Vue.component('event-notification', require('./components/EventNotification').default);
+Vue.component('voucher-option', require('./components/voucher/voucherOptionComponent').default);
+Vue.component('voucher-redemption-success', require('./components/voucher/voucherRedemptionSuccessComponent').default);
 
 Vue.config.productionTip = false;
 
 //Vue.prototype.$userId = document.querySelector("meta[name='user_id']").getAttribute('content');
 
-Vue.filter('dateFormat', function(value) {
-   if (value) {
+Vue.filter('dateFormat', function (value) {
+    if (value) {
         return moment(String(value)).format('MM/DD/YYYY hh:mm')
     }
 });
@@ -104,7 +117,8 @@ const router = new VueRouter({
     routes
 });
 
-const app = new Vue({
+export const app = new Vue({
+    Vuetify,
     el: '#app',
     store,
     router,

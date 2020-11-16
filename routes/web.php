@@ -62,12 +62,20 @@ Route::group(['middleware' => 'auth', 'prefix'=> 'messages'], function () {
     Route::get('/', 'MessageController@fetchAll');
     Route::post('/', 'MessageController@sendMessage');
     Route::get('get_with_user_id', 'MessageController@fetchAllWithUserId');
+    Route::get('get_approved_users', 'MessageController@getApprovedUserList');
 });
 
 Route::group(['middleware' => 'auth', 'prefix'=> 'counselling'], function () {
     Route::get('get_categories', 'CounsellingController@getAllCategories');
     Route::get('get_paginated_request', 'CounsellingController@getPaginatedCounsellingRequest');
     Route::post('create_counselling_request', 'CounsellingController@createCounsellingRequest');
+    Route::post('accept_request', 'CounsellingController@acceptCasualCounsellingRequest');
+    Route::post('approve_request', 'CounsellingController@approveCasualCounsellingRequest');
+});
+
+Route::group(['middleware' => 'auth', 'prefix' => 'notification'], function () {
+    Route::get('get_all', 'NotificationController@getAllUnreadNotification');
+    Route::post('update_notification_status', 'NotificationController@modifyNotificationStatus');
 });
 
 Route::get('{any}', function () {
