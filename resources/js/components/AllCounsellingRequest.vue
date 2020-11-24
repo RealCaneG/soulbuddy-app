@@ -200,6 +200,10 @@ export default {
     border-radius: 1rem;
     overflow: hidden;
     margin-bottom: 1rem;
+    min-height: 25rem;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-around;
 }
 
 .button-container {
@@ -209,7 +213,7 @@ export default {
 
 button {
     text-align: center;
-    font-size: 2rem;
+    font-size: 1rem;
     color: #F63854;
     padding: 0.5rem 3rem;
     border: 1px solid #F63854;
@@ -231,10 +235,14 @@ button:focus {
     max-width: 50rem;
     font-family: Arvo, SansSerif, Sana, serif;
     color: #484848;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    height: 15rem;
 }
 
 .header {
-    padding: 1rem 0 0 10px;
+    padding-top: 1rem;
     text-align: center;
     font-family: Arvo, serif;
     font-size: 1.5rem;

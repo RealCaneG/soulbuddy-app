@@ -11,8 +11,9 @@
         <div class="tools">
             <slot name="tools"></slot>
         </div>
-
-        <slot name="content"></slot>
+        <main class="content">
+            <slot name="content"></slot>
+        </main>
     </div>
 </template>
 
@@ -23,16 +24,17 @@
 </script>
 
 <style scoped>
-    .wrapper-center {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        justify-content: center;
-    }
-
     .tools {
         padding: 0 1rem 0 1rem;
-        height: 15rem;
+    }
+
+    .content {
+        padding: 0 7rem;
+    }
+
+    select {
+        border-radius: 25px;
+        font-size: .9rem;
+        max-width: 10rem;
     }
 </style>

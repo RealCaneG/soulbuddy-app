@@ -1,11 +1,12 @@
 <template>
     <page-template>
-        <h2 slot="bannerHeader">Counselling</h2>
+        <div slot="bannerHeader" class="banner">
+        </div>
         <p slot="bannerDescription">Seek Comfort from Your Soul Buddy in an Anonymous, affordable and Private Way</p>
         <div slot="tools" class="tool-container">
-            <div class="row">
-                <div class="col-md-8 tools-desc"><p>Match you to a request that you can help with..</p></div>
-                <b-form-select class="col-md-4" :options="this.categories" v-model="category"></b-form-select>
+            <div class="category-container">
+                <div class="tools-desc">Match you to a request that you can help with..</div>
+                <b-form-select :options="this.categories" v-model="category"></b-form-select>
             </div>
             <div class="wrapper-center">
                 <b-button v-b-modal.create-request-modal @click="$bvModal.show('create-request-modal')">Raise Your
@@ -70,22 +71,49 @@
         margin-top: 5rem;
     }
 
-    .wrapper-center {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .tool-container {
+    .banner {
         background-image: url("/images/counselling-banner.jpg");
         background-repeat: no-repeat;
         background-size: 100%;
         background-position: center;
-        height: 100%;
+        height: 30%;
+        overflow: hidden;
+    }
+
+    .tool-container {
+        text-align: center;
     }
 
     .tools-desc {
         text-align: right;
+        font-family: 'Arvo', serif;
+        font-weight: 600;
+        font-size: .9rem;
+        margin-right: 1rem;
+    }
+
+    button {
+        text-align: center;
+        font-size: 1rem;
+        color: white;
+        padding: 0.5rem 3rem;
+        border: 1px solid #F63854;
+        border-radius: 2rem;
+        background-color: #f63854;
+    }
+
+    button:hover {
+        color: white;
+        background-color: #F63854;
+    }
+
+    button:focus {
+        outline: none;
+    }
+
+    .category-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
     }
 </style>

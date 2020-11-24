@@ -43,7 +43,12 @@ Vue.use(ElementUi);
 Vue.use(VueRouter);
 Vue.use(VueScrollactive);
 Vue.use(infiniteScroll);
-Vue.use(VModal, {dialog: true});
+Vue.use(VModal, {
+    dynamicDefaults: {
+        draggable: true,
+        height: 'auto'
+    }
+});
 Vue.use(Vuetify, {
     theme: {
         light: {
