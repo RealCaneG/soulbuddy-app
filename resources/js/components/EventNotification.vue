@@ -94,7 +94,7 @@
         justify-content: space-between;
         border-radius: .3rem;
         background-color: #f5df405c;
-        width: 50%;
+        width: 100%;
     }
 
     button {
