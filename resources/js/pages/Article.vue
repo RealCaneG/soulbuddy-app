@@ -1,27 +1,25 @@
 <template>
     <page-template>
-        <h2 slot="bannerHeader">Articles</h2>
+        <div slot="bannerHeader" class="banner"/>
         <p slot="bannerDescription"></p>
         <div slot="tools" class="tool-container">
-            <div class="row">
-                <div class="col-md-8 tools-desc"><p></p></div>
-                <b-form-select class="col-md-4" :options="this.categories" v-model="category"></b-form-select>
+            <div class="category-container">
+                <b-form-select :options="this.categories" v-model="category"></b-form-select>
             </div>
             <div class="wrapper-center">
-                <b-button v-b-modal.create-article-modal @click="$bvModal.show('create-article-modal')">Write an
-                    Article
+                <b-button class="button" v-b-modal.create-article-modal @click="$bvModal.show('create-article-modal')">
+                    Write an Article
                 </b-button>
             </div>
             <b-modal class="dialog" busy="true" centered id="create-article-modal">
                 <template v-slot:modal-title>
                     <h2>Write an Article</h2>
-                    <!---->
                 </template>
                 <create-article-component
                     v-on:onSubmit="submitForm"></create-article-component>
-                <template v-slot:modal-footer>
-                    <p></p>
-                </template>
+<!--                <template v-slot:modal-footer>-->
+<!--                    <p></p>-->
+<!--                </template>-->
             </b-modal>
         </div>
         <template>
@@ -79,15 +77,49 @@
         justify-content: center;
     }
 
-    .tool-container {
+    .banner {
         background-image: url("/images/article-banner.jpg");
         background-repeat: no-repeat;
         background-size: 100%;
         background-position: center;
-        height: 100%;
+        height: 30%;
+        overflow: hidden;
+    }
+
+    .tool-container {
+        text-align: center;
     }
 
     .tools-desc {
         text-align: right;
+        font-family: 'Arvo', serif;
+        font-weight: 600;
+        font-size: .9rem;
+        margin-right: 1rem;
+    }
+
+    button {
+        text-align: center;
+        font-size: 1rem;
+        color: white;
+        padding: 0.5rem 3rem;
+        border: 1px solid #F63854;
+        border-radius: 2rem;
+        background-color: #f63854;
+    }
+
+    button:hover {
+        color: white;
+        background-color: #F63854;
+    }
+
+    button:focus {
+        outline: none;
+    }
+
+    .category-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
     }
 </style>

@@ -2,7 +2,7 @@
     <page-template>
         <div slot="bannerHeader" class="banner">
         </div>
-        <p slot="bannerDescription">Seek Comfort from Your Soul Buddy in an Anonymous, affordable and Private Way</p>
+<!--        <p slot="bannerDescription">Seek Comfort from Your Soul Buddy in an Anonymous, affordable and Private Way</p>-->
         <div slot="tools" class="tool-container">
             <div class="category-container">
                 <div class="tools-desc">Match you to a request that you can help with..</div>

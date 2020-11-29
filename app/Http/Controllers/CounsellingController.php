@@ -44,8 +44,6 @@ class CounsellingController extends Controller
     {
         $user = Auth::user();
         $data = \GuzzleHttp\json_decode($request->data, true);
-        error_log($data['category']);
-        error_log($user);
         if ($this->deductVouchers($user->id)) {
             \DB::beginTransaction();
             try {
@@ -70,6 +68,7 @@ class CounsellingController extends Controller
 
     public function getAllCategories(Request $request)
     {
+        $category = Category::all('id', 'category');
         return response()->json(Category::all('id', 'category'));
     }
 
@@ -82,7 +81,6 @@ class CounsellingController extends Controller
         \DB::beginTransaction();
         try {
             $counsellingRequestId = $request->request_id;
-            error_log('counselling request id '. $counsellingRequestId . 'client user id'. $clientUserId);
             $existingRecord = UserCounsellingRecord::where('applied_user_id', $requestUserId)
                 ->where('counselling_request_id', $counsellingRequestId)->get();
             if ($existingRecord->isNotEmpty()) return \response()->json(['error' => true, 'message' => 'Duplicated record!']);
@@ -117,8 +115,6 @@ class CounsellingController extends Controller
         $isApproved = $request->is_approved;
         $counsellingRequestId = $request->request_id;
         $userIdToBeApproved = $request->user_id_to_approve;
-        error_log($counsellingRequestId . ' + ' . $userIdToBeApproved);
-        error_log('isApproved' . ' + ' . $isApproved);
         $userCounsellingRecord = UserCounsellingRecord::whereCounsellingRequestId($counsellingRequestId)->first();
         if ($userCounsellingRecord->doesntExist()) {
             return response()->json(['error' => true, 'message' => 'Unable to find the record with Id: ' . $counsellingRequestId]);
@@ -147,7 +143,6 @@ class CounsellingController extends Controller
             } else {
                 $userCounsellingRecord->fill(['status' => 'REJECTED'])->save();
             }
-            error_log($userCounsellingRecord->get());
             \DB::commit();
         }catch (\Exception $exception) {
             \DB::rollBack();

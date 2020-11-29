@@ -1,18 +1,18 @@
 <template>
-    <div class="row pt-3">
-        <div class="col-lg-6">
-            <div class="card card-default">
-                <div class="card-header">
-<!--                    <span>
-                        <b-icon icon="box-arrow-left"
-                                @click="enterChatRoom">
-                        </b-icon>
-                    </span>-->
+    <div class="row pt-3 wrapper">
+        <div class="base-container">
+            <div class="chatroom-container">
+                <div class="header">
+                    <!--                    <span>
+                                            <b-icon icon="box-arrow-left"
+                                                    @click="enterChatRoom">
+                                            </b-icon>
+                                        </span>-->
                     <span>Messages</span>
                 </div>
-                <div v-if="toUserId != null" >
+                <div v-if="toUserId != null">
                     <div class="card-body p-0">
-                        <ul  style="height: 30rem; overflow-y:scroll" v-chat-scroll>
+                        <ul style="height: 30rem; overflow-y:scroll" v-chat-scroll>
                             <li class="p-2" v-for="m in this.messages[toUserId]" :key="m.id">
                                 <div v-bind:class="dialogClassObject(m.user.id)">
                                     <strong>{{ m.user.name }}</strong>
@@ -31,6 +31,7 @@
                             type="text"
                             name="message"
                             class="form-control"
+                            aria-placeholder="Enter your message..."
                             :disabled="!isInChatRoom">
                         </input>
                         <b-icon-caret-right-square-fill @click="sendMessage" class="send-icon"/>
@@ -39,9 +40,9 @@
             </div>
             <span class="text-muted" v-if="currentTypingUser">{{ currentTypingUser.name }} is typing...</span>
         </div>
-        <div class="col-2">
-            <div class="card card-default">
-                <div class="card-header">Active Users</div>
+        <div class="">
+            <div class="contact-list-container">
+                <div style="border-bottom: 1px solid grey; text-align: center">Active Users</div>
                 <div class="card-body">
                     <ul class="user-list list-unstyled">
                         <li class="py-2"
@@ -49,7 +50,7 @@
                             :key="index">
                             <span v-bind:class="{'online-user': isOnline(contact.contact_user)}"><b-icon-person-fill/></span>
                             <button @click="enterChatRoom(contact.contact_user.id)"> {{
-                                    contact.contact_user.name
+                                contact.contact_user.name
                                 }}
                             </button>
                         </li>
@@ -61,170 +62,203 @@
 </template>
 
 <style scoped>
-/*.chat-room {
-    width: 100%;
-    display: flex;
-}*/
+    /*.chat-room {
+        width: 100%;
+        display: flex;
+    }*/
 
-* {
-    --bg-primary: #fff;
-    --bg-secondary: #d3d8e452;
-    --text-primary: #333;
-    --text-secondary: #e861a2;
-    --transition-speed: 500ms;
-    --theme-color: #F63854;
-}
+    * {
+        --bg-primary: #fff;
+        --bg-secondary: #d3d8e452;
+        --text-primary: #333;
+        --text-secondary: #e861a2;
+        --transition-speed: 500ms;
+        --theme-color: #F63854;
+    }
 
-.contact-list-container {
+    .wrapper {
+        margin-right: 1rem;
+    }
 
-}
+    .contact-list-container {
+        border-radius: 25px;
+        display: flex;
+        border: 1px solid #cecece;
+        flex-direction: column;
+        padding: 1rem;
+        font-family: Roboto, serif;
+    }
 
-.chat-dialog-container {
+    .base-container {
+        margin-left: 1rem;
+        min-width: 50rem;
+        margin-right: 1rem;
+    }
 
-}
+    .form-control {
+        width: 93%;
+        border: none;
+    }
 
-.input-bar {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    text-align: left;
-}
+    .chatroom-container {
+        padding: 12px;
+        border-radius: 25px;
+        display: flex;
+        border: 1px solid #cecece;
+        flex-direction: column;
+    }
 
-.send-icon {
-    color: var(--theme-color);
-    font-size: 2rem;
-}
+    .header {
+        padding: 10px;
+        border-bottom: 1px solid #cecece;
+        font-family: Roboto, serif;
+    }
 
-.message-container {
-    min-width: 100%;
-    max-width: 100%;
-    width: auto;
-    flex-wrap: wrap;
-}
+    .input-bar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        border: 1px solid grey;
+        border-radius: 25px;
+        overflow: hidden;
+    }
 
-.online-user {
-    color: #00e676;
-}
+    .send-icon {
+        color: var(--theme-color);
+        font-size: 2rem;
+    }
 
-.dialog-to {
-    background-color: #ffdede6e;
-    text-align: left;
-    padding: 5px 10px;
-    border-radius: 1rem;
-    min-width: 10%;
-    width: auto;
-    max-width: 45%;
-    margin-right: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
+    .message-container {
+        min-width: 100%;
+        max-width: 100%;
+        width: auto;
+        flex-wrap: wrap;
+    }
 
-.dialog-own {
-    background-color: #cdf1f6;
-    text-align: right;
-    padding: 5px 10px;
-    border-radius: 1rem;
-    min-width: 10%;
-    width: auto;
-    max-width: 45%;
-    margin-left: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
+    .online-user {
+        color: #00e676;
+    }
+
+    .dialog-to {
+        background-color: #ffdede6e;
+        text-align: left;
+        padding: 5px 10px;
+        border-radius: 1rem;
+        min-width: 10%;
+        width: auto;
+        max-width: 45%;
+        margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dialog-own {
+        background-color: #cdf1f6;
+        text-align: right;
+        padding: 5px 10px;
+        border-radius: 1rem;
+        min-width: 10%;
+        width: auto;
+        max-width: 45%;
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
 </style>
 <script>
-import {mapActions} from "vuex";
+    import {mapActions} from "vuex";
 
-export default {
-    data() {
-        return {
-            newMessage: '',
-            isInChatRoom: false,
-            toUserId: null,
-        }
-    },
-    computed: {
-        getToUserId() {
-            return this.toUserId;
-        },
-        currentUser() {
-            console.log(`currentUser = ${JSON.stringify(this.$store.state.currentUser)}`)
-            return this.$store.state.currentUser;
-        },
-        currentTypingUser() {
-            return this.$store.state.currentTypingUser;
-        },
-        onlineUserIdList() {
-            return this.$store.state.activeUsers.map(user => user.id);
-        },
-        userContactList() {
-            return this.$store.state.approvedUsers;
-        },
-        messages() {
-            return this.$store.state.messages;
-        }
-    },
-    created() {
-        this.fetchMessages();
-        this.getContact();
-    },
-    //.filter(u=> u.user_id !== currentUser.id)
-    methods: {
-        ...mapActions({getContact: 'getUserContactList'}),
-        getMessagesByUser() {
-            console.log('get msg by user');
-            console.log(this.toUserId);
-            console.log(this.messages);
-            return (this.messages == null || this.toUserId === undefined) ? [] : this.messages[this.toUserId];
-        },
-        isOnline(user) {
-            let userId = user.id;
-            return this.onlineUserIdList.find(u => u === userId) != null;
-        },
-        dialogClassObject(userId) {
+    export default {
+        data() {
             return {
-                'dialog-own': this.toUserId !== userId,
-                'dialog-to': this.toUserId === userId
+                newMessage: '',
+                isInChatRoom: false,
+                toUserId: null,
             }
         },
-        enterChatRoom(id) {
-            this.isInChatRoom = !this.isInChatRoom;
-            if (this.toUserId != null) {
-                this.toUserId = null;
-            } else {
-                this.toUserId = id;
+        computed: {
+            getToUserId() {
+                return this.toUserId;
+            },
+            currentUser() {
+                console.log(`currentUser = ${JSON.stringify(this.$store.state.currentUser)}`)
+                return this.$store.state.currentUser;
+            },
+            currentTypingUser() {
+                return this.$store.state.currentTypingUser;
+            },
+            onlineUserIdList() {
+                return this.$store.state.activeUsers.map(user => user.id);
+            },
+            userContactList() {
+                return this.$store.state.approvedUsers;
+            },
+            messages() {
+                return this.$store.state.messages;
             }
         },
-        fetchMessages() {
-            this.$store.dispatch('getAllMessages');
+        created() {
+            this.fetchMessages();
+            this.getContact();
         },
-        sendMessage() {
-            let msgObj = {
-                message: this.newMessage,
-                to_user_id: this.toUserId,
-                user_id: this.currentUser.id,
-                user: {
-                    id: this.currentUser.id,
-                    name: this.currentUser.name
+        //.filter(u=> u.user_id !== currentUser.id)
+        methods: {
+            ...mapActions({getContact: 'getUserContactList'}),
+            getMessagesByUser() {
+                console.log('get msg by user');
+                console.log(this.toUserId);
+                console.log(this.messages);
+                return (this.messages == null || this.toUserId === undefined) ? [] : this.messages[this.toUserId];
+            },
+            isOnline(user) {
+                let userId = user.id;
+                return this.onlineUserIdList.find(u => u === userId) != null;
+            },
+            dialogClassObject(userId) {
+                return {
+                    'dialog-own': this.toUserId !== userId,
+                    'dialog-to': this.toUserId === userId
                 }
+            },
+            enterChatRoom(id) {
+                this.isInChatRoom = !this.isInChatRoom;
+                if (this.toUserId != null) {
+                    this.toUserId = null;
+                } else {
+                    this.toUserId = id;
+                }
+            },
+            fetchMessages() {
+                this.$store.dispatch('getAllMessages');
+            },
+            sendMessage() {
+                let msgObj = {
+                    message: this.newMessage,
+                    to_user_id: this.toUserId,
+                    user_id: this.currentUser.id,
+                    user: {
+                        id: this.currentUser.id,
+                        name: this.currentUser.name
+                    }
+                }
+                this.$store.dispatch('updateMessages', msgObj);
+                let formData = new FormData();
+                formData.append("message", msgObj.message);
+                formData.append("user_id", msgObj.to_user_id);
+                axios
+                    .post('/messages', formData, {
+                        headers: {"Content-Type": "multipart/form-data"}
+                    }).then(res => console.log('message sent!'));
+                this.newMessage = '';
+            },
+            sendTypingEvent() {
+                Echo.join('message')
+                    .whisper('typing', this.currentUser);
             }
-            this.$store.dispatch('updateMessages', msgObj);
-            let formData = new FormData();
-            formData.append("message", msgObj.message);
-            formData.append("user_id", msgObj.to_user_id);
-            axios
-                .post('/messages', formData, {
-                    headers: {"Content-Type": "multipart/form-data"}
-                }).then(res => console.log('message sent!'));
-            this.newMessage = '';
-        },
-        sendTypingEvent() {
-            Echo.join('message')
-                .whisper('typing', this.currentUser);
         }
     }
-}
 </script>

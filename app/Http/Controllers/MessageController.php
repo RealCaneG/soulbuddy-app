@@ -8,6 +8,7 @@ use App\Message;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Psy\Util\Json;
 
 class MessageController extends Controller
 {
@@ -46,8 +47,8 @@ class MessageController extends Controller
             $msg->key = $userId;
         }
         $messages = $messages->groupBy('key')->sortBy('created_at');
-        error_log($messages);
-        return response()->json(['data' => $messages, 'status' => 'success']);
+//        error_log($messages->all());
+        return response()->json(['data' => $messages->all(), 'status' => 'success']);
     }
 
     public function sendMessage(Request $request)

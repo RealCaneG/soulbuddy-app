@@ -136,21 +136,22 @@ export default new Vuex.Store({
             if (state.userId === message.user_id) {
                 if (state.messages[message.to_user_id])
                     state.messages[message.to_user_id].push(message);
-                else state.messages.map((e) => {
-                    let o = Object.assign({}, e);
-                    o.message.to_user_id = message;
-                    return o;
-                })
+                // else state.messages.map((e) => {
+                //     let o = Object.assign({}, e);
+                //     o.message.to_user_id = message;
+                //     return o;
+                // })
             } else {
                 if (state.messages[message.user_id]) {
                     state.messages[message.user_id].push(message);
-                } else {
-                    state.messages.map((e) => {
-                        let o = Object.assign({}, e);
-                        o.message.user_id = message;
-                        return o;
-                    })
                 }
+                // } else {
+                //     state.messages.map((e) => {
+                //         let o = Object.assign({}, e);
+                //         o.message.user_id = message;
+                //         return o;
+                //     })
+                // }
             }
         },
         UPDATE_NOTIFICATION_STATE(state, notification) { // remove notification from list
